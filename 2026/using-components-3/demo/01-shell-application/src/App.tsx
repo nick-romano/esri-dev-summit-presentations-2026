@@ -20,22 +20,11 @@ import {
 
 import type WebMap from '@arcgis/core/WebMap';
 import type FeatureLayer from '@arcgis/core/layers/FeatureLayer';
-import type Point from '@arcgis/core/geometry/Point';
-import type MapView from '@arcgis/core/views/MapView';
 
 import { LayersPanel } from './components/LayersPanel';
 import { MorelPanel } from './components/MorelPanel';
 
 const FIREYEARS = [2025, 2024, 2023, 2022, 2021, 2020];
-
-interface ArcgisViewReadyDetail {
-  view: MapView;
-}
-
-interface ArcgisViewClickDetail {
-  view: MapView;
-  mapPoint: Point;
-}
 
 export function App(): React.JSX.Element {
   const [featureLayers, setFeatureLayers] = useState<FeatureLayer[]>([]);
@@ -62,8 +51,10 @@ export function App(): React.JSX.Element {
   );
   const [isFiltersSheetOpen, setIsFiltersSheetOpen] = useState(false);
 
-  const handleViewReady = (event: CustomEvent<ArcgisViewReadyDetail>): void => {
-    const viewElement = event.target as HTMLArcgisMapElement;
+  const handleViewReady = (
+    event: HTMLArcgisMapElement['arcgisViewReadyChange'],
+  ): void => {
+    const viewElement = event.target;
     const map = viewElement.map as WebMap;
     const layers = map.allLayers.filter(
       (layer): layer is FeatureLayer => layer.type === 'feature',
@@ -136,7 +127,7 @@ export function App(): React.JSX.Element {
   );
 
   const handleMapClick = async (
-    event: CustomEvent<ArcgisViewClickDetail>,
+    event: HTMLArcgisMapElement['arcgisViewClick'],
   ): Promise<void> => {
     const { mapPoint } = event.detail;
 
