@@ -52,10 +52,18 @@ export function isTrailLayer(layer: FeatureLayer): boolean {
   return title.includes('trailnfspublish');
 }
 
+export function isRecreationSitesLayer(layer: FeatureLayer): boolean {
+  const title = (layer.title ?? '').toLowerCase();
+  return title.includes('recreationopportunities');
+}
+
 export function filterRelevantLayers(layers: FeatureLayer[]): FeatureLayer[] {
   return layers.filter(
     (layer) =>
-      isPerimeterLayer(layer) || isRoadLayer(layer) || isTrailLayer(layer),
+      isPerimeterLayer(layer) ||
+      isRoadLayer(layer) ||
+      isTrailLayer(layer) ||
+      isRecreationSitesLayer(layer),
   );
 }
 
