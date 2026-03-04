@@ -15,8 +15,9 @@ import {
   isTrailLayer,
 } from '../utils/mapUtils';
 
-import type WebMap from '@arcgis/core/WebMap';
-import type FeatureLayer from '@arcgis/core/layers/FeatureLayer';
+import type WebMap from '@arcgis/core/WebMap.js';
+import type FeatureLayer from '@arcgis/core/layers/FeatureLayer.js';
+import GraphicsLayer from '@arcgis/core/layers/GraphicsLayer.js';
 
 const FIREYEARS = [2025, 2024, 2023, 2022, 2021, 2020] as const;
 
@@ -24,6 +25,7 @@ type LayersState = {
   featureLayers: FeatureLayer[];
   activeFireYears: number[];
   activeRoadTrailLayerIds: string[];
+  clickPinLayer: GraphicsLayer | null;
 };
 
 type LayersAction =
@@ -31,6 +33,7 @@ type LayersAction =
       type: 'viewReadyLoadedLayers';
       featureLayers: FeatureLayer[];
       initialRoadTrailLayerIds: string[];
+      clickPinLayer: GraphicsLayer;
     }
   | { type: 'toggleFireYear'; year: number }
   | { type: 'toggleRoadTrailLayer'; layerId: string };
@@ -39,6 +42,7 @@ const initialState: LayersState = {
   featureLayers: [],
   activeFireYears: [...FIREYEARS],
   activeRoadTrailLayerIds: [],
+  clickPinLayer: null,
 };
 
 function layersReducer(state: LayersState, action: LayersAction): LayersState {
@@ -48,6 +52,7 @@ function layersReducer(state: LayersState, action: LayersAction): LayersState {
         ...state,
         featureLayers: action.featureLayers,
         activeRoadTrailLayerIds: action.initialRoadTrailLayerIds,
+        clickPinLayer: action.clickPinLayer,
       };
     }
     case 'toggleFireYear': {
@@ -148,10 +153,25 @@ export function LayersProvider(props: PropsWithChildren): React.JSX.Element {
         .filter((layer) => isRoadLayer(layer) || isTrailLayer(layer))
         .map((layer) => layer.id);
 
+      const clickPinLayerId = 'click-pin-layer';
+      let clickPinLayer = map.findLayerById(clickPinLayerId) as
+        | GraphicsLayer
+        | undefined;
+
+      if (!clickPinLayer) {
+        clickPinLayer = new GraphicsLayer({
+          id: clickPinLayerId,
+          title: 'Clicked location',
+          listMode: 'hide',
+        });
+        map.add(clickPinLayer);
+      }
+
       dispatch({
         type: 'viewReadyLoadedLayers',
         featureLayers: filteredLayers,
         initialRoadTrailLayerIds: initialRoadTrailIds,
+        clickPinLayer,
       });
     },
     [],

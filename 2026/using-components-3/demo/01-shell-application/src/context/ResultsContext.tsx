@@ -8,6 +8,8 @@ import {
   type PropsWithChildren,
 } from 'react';
 
+import Graphic from '@arcgis/core/Graphic.js';
+
 import { getAccessAtPoint, getBurnStatusAtPoint } from '../utils/mapUtils';
 import { useLayersState } from './LayersContext';
 
@@ -88,7 +90,8 @@ export function ResultsProvider(props: PropsWithChildren): React.JSX.Element {
   const [state, dispatch] = useReducer(resultsReducer, initialState);
   const requestIdRef = useRef(0);
 
-  const { perimeterLayers, roadClosureLayers } = useLayersState();
+  const { perimeterLayers, roadClosureLayers, clickPinLayer } =
+    useLayersState();
 
   const handleMapClick = useCallback(
     async (event: HTMLArcgisMapElement['arcgisViewClick']): Promise<void> => {
@@ -96,6 +99,20 @@ export function ResultsProvider(props: PropsWithChildren): React.JSX.Element {
 
       requestIdRef.current += 1;
       const requestId = requestIdRef.current;
+
+      // Add/replace a location pin graphic so users can see what they clicked.
+      if (clickPinLayer) {
+        clickPinLayer.removeAll();
+        clickPinLayer.add(
+          new Graphic({
+            geometry: mapPoint,
+            symbol: {
+              type: 'simple-marker',
+              size: 12,
+            },
+          }),
+        );
+      }
 
       if (
         typeof mapPoint.latitude === 'number' &&
@@ -136,7 +153,7 @@ export function ResultsProvider(props: PropsWithChildren): React.JSX.Element {
         detail: accessStatus.detail,
       });
     },
-    [perimeterLayers, roadClosureLayers],
+    [clickPinLayer, perimeterLayers, roadClosureLayers],
   );
 
   const actions: ResultsActions = useMemo(
