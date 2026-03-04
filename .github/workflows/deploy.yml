@@ -60,10 +60,10 @@ jobs:
       - name: Build App > 2026 > Using Components 3 > 01-shell-application
         working-directory: 2026/using-components-3/demo/01-shell-application
         run: |
-          npm ci
+          npm install --no-package-lock --no-audit --no-fund
           npx vite build \
             --base=/${{github.event.repository.name}}/2026/using-components-3/demo/01-shell-application/ \
-            --outDir=../../../../dist/2026/using-components-3/demo/01-shell-application/dist
+            --outDir=../../../../dist/2026/using-components-3/demo/01-shell-application/
 
       - name: Build Slides > 2026 > a-look-under-the-hood
         working-directory: 2026/a-look-under-the-hood
