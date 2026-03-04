@@ -4,19 +4,9 @@ import '@esri/calcite-components/components/calcite-tile';
 import '@esri/calcite-components/components/calcite-tile-group';
 import '@esri/calcite-components/components/calcite-meter';
 
-interface MorelPanelProps {
-  burnStatusLabel: string;
-  burnStatusValue: number;
-  burnDetail: string;
-  elevationValue: number | null;
-  suitabilityLabel: string;
-  suitabilityValue: number;
-  accessDetail: string;
-  locationLabel: string;
-  isSmallScreen: boolean;
-}
+import { useResultsState } from '../context/ResultsContext';
 
-export function MorelPanel(props: MorelPanelProps): React.JSX.Element {
+export function MorelPanel(): React.JSX.Element {
   const {
     burnStatusLabel,
     burnStatusValue,
@@ -26,7 +16,7 @@ export function MorelPanel(props: MorelPanelProps): React.JSX.Element {
     suitabilityValue,
     accessDetail,
     locationLabel,
-  } = props;
+  } = useResultsState();
 
   return (
     <calcite-tile-group
