@@ -11,6 +11,7 @@ import {
 import {
   filterRelevantLayers,
   isPerimeterLayer,
+  isRecreationSitesLayer,
   isRoadLayer,
   isTrailLayer,
 } from '../utils/mapUtils';
@@ -26,6 +27,7 @@ type LayersState = {
   activeFireYears: number[];
   activeRoadTrailLayerIds: string[];
   clickPinLayer: GraphicsLayer | null;
+  selectedTrailRouteLayer: GraphicsLayer | null;
 };
 
 type LayersAction =
@@ -34,6 +36,7 @@ type LayersAction =
       featureLayers: FeatureLayer[];
       initialRoadTrailLayerIds: string[];
       clickPinLayer: GraphicsLayer;
+      selectedTrailRouteLayer: GraphicsLayer;
     }
   | { type: 'toggleFireYear'; year: number }
   | { type: 'toggleRoadTrailLayer'; layerId: string };
@@ -43,6 +46,7 @@ const initialState: LayersState = {
   activeFireYears: [...FIREYEARS],
   activeRoadTrailLayerIds: [],
   clickPinLayer: null,
+  selectedTrailRouteLayer: null,
 };
 
 function layersReducer(state: LayersState, action: LayersAction): LayersState {
@@ -53,6 +57,7 @@ function layersReducer(state: LayersState, action: LayersAction): LayersState {
         featureLayers: action.featureLayers,
         activeRoadTrailLayerIds: action.initialRoadTrailLayerIds,
         clickPinLayer: action.clickPinLayer,
+        selectedTrailRouteLayer: action.selectedTrailRouteLayer,
       };
     }
     case 'toggleFireYear': {
@@ -81,6 +86,8 @@ type LayersSelectors = {
   perimeterLayers: FeatureLayer[];
   roadClosureLayers: FeatureLayer[];
   roadAndTrailLayers: FeatureLayer[];
+  trailLayers: FeatureLayer[];
+  recreationSitesLayers: FeatureLayer[];
 };
 
 type LayersContextValue = LayersSelectors & LayersState;
@@ -114,6 +121,16 @@ export function LayersProvider(props: PropsWithChildren): React.JSX.Element {
       state.featureLayers.filter(
         (layer) => isRoadLayer(layer) || isTrailLayer(layer),
       ),
+    [state.featureLayers],
+  );
+
+  const trailLayers = useMemo(
+    () => state.featureLayers.filter((layer) => isTrailLayer(layer)),
+    [state.featureLayers],
+  );
+
+  const recreationSitesLayers = useMemo(
+    () => state.featureLayers.filter((layer) => isRecreationSitesLayer(layer)),
     [state.featureLayers],
   );
 
@@ -167,11 +184,26 @@ export function LayersProvider(props: PropsWithChildren): React.JSX.Element {
         map.add(clickPinLayer);
       }
 
+      const selectedTrailRouteLayerId = 'selected-trail-route-layer';
+      let selectedTrailRouteLayer = map.findLayerById(
+        selectedTrailRouteLayerId,
+      ) as GraphicsLayer | undefined;
+
+      if (!selectedTrailRouteLayer) {
+        selectedTrailRouteLayer = new GraphicsLayer({
+          id: selectedTrailRouteLayerId,
+          title: 'Selected trail route',
+          listMode: 'hide',
+        });
+        map.add(selectedTrailRouteLayer);
+      }
+
       dispatch({
         type: 'viewReadyLoadedLayers',
         featureLayers: filteredLayers,
         initialRoadTrailLayerIds: initialRoadTrailIds,
         clickPinLayer,
+        selectedTrailRouteLayer,
       });
     },
     [],
@@ -222,8 +254,17 @@ export function LayersProvider(props: PropsWithChildren): React.JSX.Element {
       perimeterLayers,
       roadClosureLayers,
       roadAndTrailLayers,
+      trailLayers,
+      recreationSitesLayers,
     }),
-    [state, perimeterLayers, roadClosureLayers, roadAndTrailLayers],
+    [
+      state,
+      perimeterLayers,
+      roadClosureLayers,
+      roadAndTrailLayers,
+      trailLayers,
+      recreationSitesLayers,
+    ],
   );
 
   const actions: LayersActions = useMemo(

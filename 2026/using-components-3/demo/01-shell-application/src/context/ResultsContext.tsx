@@ -10,7 +10,10 @@ import {
 
 import Graphic from '@arcgis/core/Graphic.js';
 
-import { getAccessAtPoint, getBurnStatusAtPoint } from '../utils/mapUtils';
+import {
+  getBurnStatusAtPoint,
+  getWalkingAccessAtPoint,
+} from '../utils/mapUtils';
 import { useLayersState } from './LayersContext';
 
 type ResultsState = {
@@ -18,18 +21,18 @@ type ResultsState = {
   burnStatusLabel: string;
   burnDetail: string;
   elevationValue: number | null;
-  suitabilityValue: number;
-  suitabilityLabel: string;
+  accessLabel: string;
   accessDetail: string;
+  accessValue: number;
   locationLabel: string;
 };
 
 type ResultsAction =
   | {
       type: 'setAccessStatus';
-      score: number;
       label: string;
       detail: string;
+      value: number;
     }
   | {
       type: 'setBurnStatus';
@@ -44,12 +47,31 @@ const initialState: ResultsState = {
   burnStatusValue: 0,
   burnStatusLabel: 'Tap map',
   elevationValue: null,
-  suitabilityValue: 0,
-  suitabilityLabel: 'Tap map',
   burnDetail: 'Click the map to see burn history.',
-  accessDetail: 'Click the map to see distance to closure lines.',
+  accessLabel: 'Tap map',
+  accessDetail: 'Click the map to see walking distance via nearby trails.',
+  accessValue: 0,
   locationLabel: 'Tap map',
 };
+
+function getAccessValueFromMiles(alongTrailMiles: number | null): number {
+  if (alongTrailMiles === null || !Number.isFinite(alongTrailMiles)) {
+    return 0;
+  }
+
+  // Best is within 1 mile; worst is > 10 miles.
+  if (alongTrailMiles <= 1) {
+    return 100;
+  }
+  if (alongTrailMiles >= 10) {
+    return 0;
+  }
+
+  // Linear scale: 1mi => 100, 10mi => 0
+  const t = (alongTrailMiles - 1) / 9;
+  const value = 100 * (1 - t);
+  return Math.min(100, Math.max(0, Math.round(value)));
+}
 
 function resultsReducer(
   state: ResultsState,
@@ -70,9 +92,9 @@ function resultsReducer(
     case 'setAccessStatus':
       return {
         ...state,
-        suitabilityValue: action.score,
-        suitabilityLabel: action.label,
+        accessLabel: action.label,
         accessDetail: action.detail,
+        accessValue: action.value,
       };
     default:
       return state;
@@ -90,8 +112,13 @@ export function ResultsProvider(props: PropsWithChildren): React.JSX.Element {
   const [state, dispatch] = useReducer(resultsReducer, initialState);
   const requestIdRef = useRef(0);
 
-  const { perimeterLayers, roadClosureLayers, clickPinLayer } =
-    useLayersState();
+  const {
+    perimeterLayers,
+    trailLayers,
+    recreationSitesLayers,
+    clickPinLayer,
+    selectedTrailRouteLayer,
+  } = useLayersState();
 
   const handleMapClick = useCallback(
     async (event: HTMLArcgisMapElement['arcgisViewClick']): Promise<void> => {
@@ -112,6 +139,11 @@ export function ResultsProvider(props: PropsWithChildren): React.JSX.Element {
             },
           }),
         );
+      }
+
+      // Clear any prior route immediately (avoid stale highlights).
+      if (selectedTrailRouteLayer) {
+        selectedTrailRouteLayer.removeAll();
       }
 
       if (
@@ -142,18 +174,50 @@ export function ResultsProvider(props: PropsWithChildren): React.JSX.Element {
       // Elevation still TODO
       dispatch({ type: 'setElevationValue', value: null });
 
-      const accessStatus = await getAccessAtPoint(mapPoint, roadClosureLayers);
+      const accessStatus = await getWalkingAccessAtPoint(
+        mapPoint,
+        trailLayers,
+        recreationSitesLayers,
+        { searchRadiusKilometers: 20 },
+      );
       if (requestIdRef.current !== requestId) {
         return;
       }
+
+      if (selectedTrailRouteLayer) {
+        selectedTrailRouteLayer.removeAll();
+        if (accessStatus.routeGeometry) {
+          selectedTrailRouteLayer.add(
+            new Graphic({
+              geometry: accessStatus.routeGeometry,
+              symbol: {
+                type: 'simple-line',
+                width: 4,
+              },
+            }),
+          );
+        }
+      }
+
+      const alongTrailMiles =
+        accessStatus.alongTrailMeters !== null
+          ? (accessStatus.alongTrailMeters * 3.28084) / 5280
+          : null;
+
       dispatch({
         type: 'setAccessStatus',
-        score: accessStatus.score,
         label: accessStatus.label,
         detail: accessStatus.detail,
+        value: getAccessValueFromMiles(alongTrailMiles),
       });
     },
-    [clickPinLayer, perimeterLayers, roadClosureLayers],
+    [
+      clickPinLayer,
+      perimeterLayers,
+      recreationSitesLayers,
+      selectedTrailRouteLayer,
+      trailLayers,
+    ],
   );
 
   const actions: ResultsActions = useMemo(

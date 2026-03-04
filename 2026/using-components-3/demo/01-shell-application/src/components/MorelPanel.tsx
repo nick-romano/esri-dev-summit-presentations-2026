@@ -12,9 +12,9 @@ export function MorelPanel(): React.JSX.Element {
     burnStatusValue,
     burnDetail,
     elevationValue,
-    suitabilityLabel,
-    suitabilityValue,
+    accessLabel,
     accessDetail,
+    accessValue,
     locationLabel,
   } = useResultsState();
 
@@ -78,16 +78,16 @@ export function MorelPanel(): React.JSX.Element {
       </calcite-tile>
       <calcite-tile icon="walking" description={accessDetail} heading="Access">
         <div className="big-number" slot="content-top">
-          {suitabilityLabel}
+          {accessLabel}
         </div>
         {/* todo this meter is backwards - maybe part 4 can theme this with tokens for meaning */}
         <calcite-meter
           scale="s"
           slot="content-top"
-          label="Access suitability"
+          label="Access (distance)"
           min={0}
           max={100}
-          value={suitabilityValue}
+          value={accessValue}
         ></calcite-meter>
       </calcite-tile>
     </calcite-tile-group>
