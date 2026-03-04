@@ -6,6 +6,8 @@ import '@arcgis/map-components/components/arcgis-zoom';
 import '@esri/calcite-components/components/calcite-shell';
 import '@esri/calcite-components/components/calcite-navigation';
 import '@esri/calcite-components/components/calcite-navigation-logo';
+import '@esri/calcite-components/components/calcite-action';
+import '@esri/calcite-components/components/calcite-sheet';
 
 import {
   getAccessAtPoint,
@@ -18,11 +20,22 @@ import {
 
 import type WebMap from '@arcgis/core/WebMap';
 import type FeatureLayer from '@arcgis/core/layers/FeatureLayer';
+import type Point from '@arcgis/core/geometry/Point';
+import type MapView from '@arcgis/core/views/MapView';
 
 import { LayersPanel } from './components/LayersPanel';
 import { MorelPanel } from './components/MorelPanel';
 
 const FIREYEARS = [2025, 2024, 2023, 2022, 2021, 2020];
+
+interface ArcgisViewReadyDetail {
+  view: MapView;
+}
+
+interface ArcgisViewClickDetail {
+  view: MapView;
+  mapPoint: Point;
+}
 
 export function App(): React.JSX.Element {
   const [featureLayers, setFeatureLayers] = useState<FeatureLayer[]>([]);
@@ -43,8 +56,13 @@ export function App(): React.JSX.Element {
   const [accessDetail, setAccessDetail] = useState(
     'Click the map to see distance to closure lines.',
   );
+  const [locationLabel, setLocationLabel] = useState('Tap map');
+  const [isSmallScreen, setIsSmallScreen] = useState<boolean>(
+    typeof window !== 'undefined' ? window.innerWidth < 680 : false,
+  );
+  const [isFiltersSheetOpen, setIsFiltersSheetOpen] = useState(false);
 
-  const handleViewReady = (event: CustomEvent): void => {
+  const handleViewReady = (event: CustomEvent<ArcgisViewReadyDetail>): void => {
     const viewElement = event.target as HTMLArcgisMapElement;
     const map = viewElement.map as WebMap;
     const layers = map.allLayers.filter(
@@ -118,9 +136,21 @@ export function App(): React.JSX.Element {
   );
 
   const handleMapClick = async (
-    event: HTMLArcgisMapElement['arcgisViewClick'],
+    event: CustomEvent<ArcgisViewClickDetail>,
   ): Promise<void> => {
-    const mapPoint = event.detail.mapPoint;
+    const { mapPoint } = event.detail;
+
+    // Update location label for tile group
+    if (
+      typeof mapPoint.latitude === 'number' &&
+      typeof mapPoint.longitude === 'number'
+    ) {
+      const latitude = mapPoint.latitude.toFixed(4);
+      const longitude = mapPoint.longitude.toFixed(4);
+      setLocationLabel(`${latitude}, ${longitude}`);
+    } else {
+      setLocationLabel('Tap map');
+    }
 
     // Burn status: whether click is inside any final fire perimeter
     const burnStatus = await getBurnStatusAtPoint(mapPoint, perimeterLayers);
@@ -131,26 +161,24 @@ export function App(): React.JSX.Element {
     // 2) Elevation todo
     setElevationValue(null);
 
-    // 3) Suitability based on proximity to closure lines (no score meter)
+    // Suitability based on proximity to closure lines (no score meter)
     const accessStatus = await getAccessAtPoint(mapPoint, roadClosureLayers);
     setSuitabilityValue(accessStatus.score);
     setSuitabilityLabel(accessStatus.label);
     setAccessDetail(accessStatus.detail);
-
-    // todo find a "suitability score" for all three (or whatever number of) factors
   };
 
   useEffect(() => {
-    const years = activeFireYears.sort((a, b) => a - b);
+    const years = [...activeFireYears].sort((a, b) => a - b);
+    const hasYears = years.length > 0;
+    const yearList = years.join(',');
+    // todo not working
     featureLayers
       .filter((layer) => isPerimeterLayer(layer))
       .forEach((layer) => {
-        if (years.length === 0) {
-          layer.visible = false;
+        if (!hasYears) {
           layer.definitionExpression = '1 = 0';
         } else {
-          layer.visible = true;
-          const yearList = years.join(',');
           layer.definitionExpression = `FIREYEAR IN (${yearList})`;
         }
       });
@@ -164,9 +192,31 @@ export function App(): React.JSX.Element {
       });
   }, [featureLayers, activeRoadTrailLayerIds]);
 
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    const handleResize = (): void => {
+      const isNarrow = window.innerWidth < 680;
+
+      setIsSmallScreen((current) => {
+        if (current !== isNarrow && !isNarrow) {
+          setIsFiltersSheetOpen(false);
+        }
+        return isNarrow;
+      });
+    };
+
+    handleResize();
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   return (
     // The Shell component is used as a layout for this template
-    <calcite-shell>
+    <calcite-shell content-behind>
       <calcite-navigation slot="header">
         {/* Heading and description dynamically populated */}
         <calcite-navigation-logo
@@ -174,6 +224,15 @@ export function App(): React.JSX.Element {
           description="Potential gathering spots"
           slot="logo"
         ></calcite-navigation-logo>
+
+        {isSmallScreen && (
+          <calcite-action
+            slot="content-end"
+            icon="gear"
+            text="Filters"
+            onClick={() => setIsFiltersSheetOpen(true)}
+          ></calcite-action>
+        )}
       </calcite-navigation>
       {/* The Map component fits to the size of the parent element  */}
       <arcgis-map
@@ -181,18 +240,22 @@ export function App(): React.JSX.Element {
         onarcgisViewReadyChange={handleViewReady}
         onarcgisViewClick={handleMapClick}
       >
-        <arcgis-zoom slot="top-left" />
         {/* We'll use the map slots to position additional components */}
-        <div slot="bottom-right">
-          <LayersPanel
-            fireYears={FIREYEARS}
-            activeFireYears={activeFireYears}
-            onFireYearSelect={handleFireYearSelection}
-            roadAndTrailLayers={roadAndTrailLayers}
-            activeRoadTrailLayerIds={activeRoadTrailLayerIds}
-            onRoadTrailSelect={handleListSelection}
-          />
-        </div>
+        {!isSmallScreen && (
+          <div slot="top-left">
+            <LayersPanel
+              fireYears={FIREYEARS}
+              activeFireYears={activeFireYears}
+              onFireYearSelect={handleFireYearSelection}
+              perimeterLayers={perimeterLayers}
+              roadAndTrailLayers={roadAndTrailLayers}
+              activeRoadTrailLayerIds={activeRoadTrailLayerIds}
+              onRoadTrailSelect={handleListSelection}
+            />
+          </div>
+        )}
+        <arcgis-zoom slot="bottom-right" />
+
         <div slot="top-right">
           <MorelPanel
             burnStatusLabel={burnStatusLabel}
@@ -202,9 +265,29 @@ export function App(): React.JSX.Element {
             suitabilityLabel={suitabilityLabel}
             suitabilityValue={suitabilityValue}
             accessDetail={accessDetail}
+            locationLabel={locationLabel}
+            isSmallScreen={isSmallScreen}
           />
         </div>
       </arcgis-map>
+      {isSmallScreen && (
+        <calcite-sheet
+          label="Map filters"
+          position="inline-end"
+          open={isFiltersSheetOpen}
+          oncalciteSheetClose={() => setIsFiltersSheetOpen(false)}
+        >
+          <LayersPanel
+            fireYears={FIREYEARS}
+            activeFireYears={activeFireYears}
+            onFireYearSelect={handleFireYearSelection}
+            perimeterLayers={perimeterLayers}
+            roadAndTrailLayers={roadAndTrailLayers}
+            activeRoadTrailLayerIds={activeRoadTrailLayerIds}
+            onRoadTrailSelect={handleListSelection}
+          />
+        </calcite-sheet>
+      )}
     </calcite-shell>
   );
 }

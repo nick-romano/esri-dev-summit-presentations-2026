@@ -1,6 +1,42 @@
 import type FeatureLayer from '@arcgis/core/layers/FeatureLayer';
 import type Point from '@arcgis/core/geometry/Point';
 
+type RendererSymbol = {
+  color?: unknown;
+  outline?: { color?: unknown };
+};
+
+type RendererLike = {
+  symbol?: RendererSymbol;
+  defaultSymbol?: RendererSymbol;
+  uniqueValueInfos?: { symbol?: RendererSymbol }[];
+};
+
+export function getLayerColor(layer: FeatureLayer): string | undefined {
+  const renderer = (layer as { renderer?: RendererLike }).renderer;
+
+  if (!renderer) {
+    return undefined;
+  }
+
+  const symbol =
+    renderer.symbol ??
+    renderer.defaultSymbol ??
+    renderer.uniqueValueInfos?.[0]?.symbol;
+
+  const color = symbol?.color ?? symbol?.outline?.color;
+
+  const colorWithToCss = color as {
+    toCss?: (includeAlpha?: boolean) => string;
+  } | null;
+
+  if (!colorWithToCss || typeof colorWithToCss.toCss !== 'function') {
+    return undefined;
+  }
+
+  return colorWithToCss.toCss(true);
+}
+
 export function isPerimeterLayer(layer: FeatureLayer): boolean {
   const title = (layer.title ?? '').toLowerCase();
   return title.includes('fire occurrence');
@@ -123,26 +159,29 @@ export async function getAccessAtPoint(
   }
 
   const thresholds = [250, 500, 1000];
-  let nearestBucket: number | null = null;
+  const distanceResults = await Promise.all(
+    thresholds.map(async (distance) => {
+      const counts = await Promise.all(
+        roadClosureLayers.map(
+          async (layer) =>
+            await layer.queryFeatureCount({
+              geometry: mapPoint,
+              distance,
+              units: 'meters',
+              spatialRelationship: 'intersects',
+            }),
+        ),
+      );
 
-  for (const distance of thresholds) {
-    const counts = await Promise.all(
-      roadClosureLayers.map(
-        async (layer) =>
-          await layer.queryFeatureCount({
-            geometry: mapPoint,
-            distance,
-            units: 'meters',
-            spatialRelationship: 'intersects',
-          }),
-      ),
-    );
+      return { distance, counts };
+    }),
+  );
 
-    if (counts.some((count) => count > 0)) {
-      nearestBucket = distance;
-      break;
-    }
-  }
+  const nearestMatch = distanceResults.find(({ counts }) =>
+    counts.some((count) => count > 0),
+  );
+
+  const nearestBucket = nearestMatch?.distance ?? null;
 
   let score = 100;
   let suitabilityText = 'High';

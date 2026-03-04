@@ -12,6 +12,8 @@ interface MorelPanelProps {
   suitabilityLabel: string;
   suitabilityValue: number;
   accessDetail: string;
+  locationLabel: string;
+  isSmallScreen: boolean;
 }
 
 export function MorelPanel(props: MorelPanelProps): React.JSX.Element {
@@ -23,76 +25,82 @@ export function MorelPanel(props: MorelPanelProps): React.JSX.Element {
     suitabilityLabel,
     suitabilityValue,
     accessDetail,
+    locationLabel,
   } = props;
 
   return (
-    <calcite-panel heading="Morel Propensity" className="panel-morel">
-      <calcite-chip label="Overall probability" slot="header-actions-end">
-        Probablility: Medium
-      </calcite-chip>
-      <calcite-tile-group
-        alignment="center"
-        label="Morel propensity tiles"
-        layout="horizontal"
-        selection-mode="none"
+    <calcite-tile-group
+      label="Morel probability tiles"
+      layout={'vertical'}
+      selection-mode="none"
+      scale="s"
+      slot="top-right"
+    >
+      <calcite-tile
+        icon="pin"
+        description="Latitude and longitude of last map click."
+        heading="Location"
       >
-        <calcite-tile
-          icon="drive-time"
-          description={burnDetail}
-          heading="Recent Wildfire"
-        >
-          <div className="big-number" slot="content-top">
-            {burnStatusLabel}
-          </div>
-          <calcite-meter
-            className="big-number"
-            slot="content-top"
-            label="Burn status"
-            min={0}
-            max={100}
-            value={burnStatusValue}
-          ></calcite-meter>
-        </calcite-tile>
-        <calcite-tile
-          className="danger"
-          description={
-            elevationValue !== null
-              ? 'Elevation at clicked location.'
-              : 'Click the map to see elevation.'
-          }
-          icon="altitude"
-          heading="Elevation"
-        >
-          <div className="big-number " slot="content-top">
-            {elevationValue !== null
-              ? `${Math.round(elevationValue)} m`
-              : 'Tap map'}
-          </div>
-          <calcite-meter
-            slot="content-top"
-            label="Elevation"
-            min={0}
-            max={4000}
-            value={Math.min(Math.max(elevationValue ?? 0, 0), 4000)}
-          ></calcite-meter>
-        </calcite-tile>
-        <calcite-tile
-          icon="walking"
-          description={accessDetail}
-          heading="Access"
-        >
-          <div className="big-number" slot="content-top">
-            {suitabilityLabel}
-          </div>
-          <calcite-meter
-            slot="content-top"
-            label="Access suitability"
-            min={0}
-            max={100}
-            value={suitabilityValue}
-          ></calcite-meter>
-        </calcite-tile>
-      </calcite-tile-group>
-    </calcite-panel>
+        <div className="big-number" slot="content-top">
+          {locationLabel}
+        </div>
+      </calcite-tile>
+      <calcite-tile
+        icon="drive-time"
+        description={burnDetail}
+        heading="Recent Wildfire"
+      >
+        <div className="big-number" slot="content-top">
+          {burnStatusLabel}
+        </div>
+        <calcite-meter
+          scale="s"
+          className="big-number"
+          slot="content-top"
+          label="Burn status"
+          min={0}
+          max={100}
+          value={burnStatusValue}
+        ></calcite-meter>
+      </calcite-tile>
+      <calcite-tile
+        className="danger"
+        description={
+          elevationValue !== null
+            ? 'Elevation at clicked location.'
+            : 'Click the map to see elevation.'
+        }
+        icon="altitude"
+        heading="Elevation"
+      >
+        <div className="big-number " slot="content-top">
+          {elevationValue !== null
+            ? `${Math.round(elevationValue)} m`
+            : 'Tap map'}
+        </div>
+        <calcite-meter
+          scale="s"
+          slot="content-top"
+          label="Elevation"
+          min={0}
+          max={4000}
+          value={Math.min(Math.max(elevationValue ?? 0, 0), 4000)}
+        ></calcite-meter>
+      </calcite-tile>
+      <calcite-tile icon="walking" description={accessDetail} heading="Access">
+        <div className="big-number" slot="content-top">
+          {suitabilityLabel}
+        </div>
+        {/* todo this meter is backwards - maybe part 4 can theme this with tokens for meaning */}
+        <calcite-meter
+          scale="s"
+          slot="content-top"
+          label="Access suitability"
+          min={0}
+          max={100}
+          value={suitabilityValue}
+        ></calcite-meter>
+      </calcite-tile>
+    </calcite-tile-group>
   );
 }
