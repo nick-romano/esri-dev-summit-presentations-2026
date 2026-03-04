@@ -52,6 +52,10 @@ jobs:
         working-directory: 2026/using-components-2
         run: |
           npx slidev build --base /${{github.event.repository.name}}/2026/using-components-2/ --out ../../dist/2026/using-components-2/
+      - name: Build Slides > 2026 > Using Components 3
+        working-directory: 2026/using-components-3
+        run: |
+          npx slidev build --base /${{github.event.repository.name}}/2026/using-components-3/ --out ../../dist/2026/using-components-3/
 
       - name: Build Slides > 2026 > a-look-under-the-hood
         working-directory: 2026/a-look-under-the-hood
