@@ -10,3 +10,25 @@ arcgis-chart {
   width: 350px;
   height: 250px;
 }
+
+calcite-meter {
+  width: 10rem;
+}
+
+calcite-tile-group,
+calcite-tile {
+  margin: 0.5rem;
+}
+
+.panel-morel {
+  width: 40rem;
+}
+
+.panel-layers {
+  width: 20rem;
+}
+
+.big-number {
+  font-size: 1rem;
+  font-weight: bold;
+}
