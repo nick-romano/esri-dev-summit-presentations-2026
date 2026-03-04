@@ -39,7 +39,7 @@ export function getLayerColor(layer: FeatureLayer): string | undefined {
 
 export function isPerimeterLayer(layer: FeatureLayer): boolean {
   const title = (layer.title ?? '').toLowerCase();
-  return title.includes('fire occurrence');
+  return title.includes('fireoccurrence');
 }
 
 export function isRoadLayer(layer: FeatureLayer): boolean {
