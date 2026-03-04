@@ -31,10 +31,9 @@ export function MorelPanel(props: MorelPanelProps): React.JSX.Element {
   return (
     <calcite-tile-group
       label="Morel probability tiles"
-      layout={'vertical'}
+      layout="vertical"
       selection-mode="none"
       scale="s"
-      slot="top-right"
     >
       <calcite-tile
         icon="pin"

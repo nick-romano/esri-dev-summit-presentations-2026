@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 
 // Individual imports for each Map, Chart and Calcite component
 import '@arcgis/map-components/components/arcgis-map';
@@ -23,6 +23,7 @@ import type FeatureLayer from '@arcgis/core/layers/FeatureLayer';
 
 import { LayersPanel } from './components/LayersPanel';
 import { MorelPanel } from './components/MorelPanel';
+import { useIsBelowScreenSize } from './hooks/useScreenSize';
 
 const FIREYEARS = [2025, 2024, 2023, 2022, 2021, 2020];
 
@@ -46,30 +47,29 @@ export function App(): React.JSX.Element {
     'Click the map to see distance to closure lines.',
   );
   const [locationLabel, setLocationLabel] = useState('Tap map');
-  const [isSmallScreen, setIsSmallScreen] = useState<boolean>(
-    typeof window !== 'undefined' ? window.innerWidth < 680 : false,
-  );
   const [isFiltersSheetOpen, setIsFiltersSheetOpen] = useState(false);
+  const isSmallScreen = useIsBelowScreenSize(680);
 
-  const handleViewReady = (
-    event: HTMLArcgisMapElement['arcgisViewReadyChange'],
-  ): void => {
-    const viewElement = event.target;
-    const map = viewElement.map as WebMap;
-    const layers = map.allLayers.filter(
-      (layer): layer is FeatureLayer => layer.type === 'feature',
-    );
+  const handleViewReady = useCallback(
+    (event: HTMLArcgisMapElement['arcgisViewReadyChange']): void => {
+      const viewElement = event.target;
+      const map = viewElement.map as WebMap;
+      const layers = map.allLayers.filter(
+        (layer): layer is FeatureLayer => layer.type === 'feature',
+      );
 
-    const filteredLayers = filterRelevantLayers(layers.toArray());
-    setFeatureLayers(filteredLayers);
+      const filteredLayers = filterRelevantLayers(layers.toArray());
+      setFeatureLayers(filteredLayers);
 
-    const initialRoadTrailIds = filteredLayers
-      .filter((layer) => isRoadLayer(layer) || isTrailLayer(layer))
-      .map((layer) => layer.id);
-    setActiveRoadTrailLayerIds(initialRoadTrailIds);
-  };
+      const initialRoadTrailIds = filteredLayers
+        .filter((layer) => isRoadLayer(layer) || isTrailLayer(layer))
+        .map((layer) => layer.id);
+      setActiveRoadTrailLayerIds(initialRoadTrailIds);
+    },
+    [],
+  );
 
-  const handleFireYearSelection = (event: CustomEvent): void => {
+  const handleFireYearSelection = useCallback((event: CustomEvent): void => {
     const item = event.target as HTMLCalciteListItemElement | null;
 
     if (!item) {
@@ -87,20 +87,19 @@ export function App(): React.JSX.Element {
         ? currentYears.filter((year) => year !== yearNumber)
         : [...currentYears, yearNumber];
 
+      // keep calcite list item selection in sync
       item.selected = !exists;
       return nextYears;
     });
-  };
+  }, []);
 
-  const handleListSelection = (event: CustomEvent): void => {
+  const handleListSelection = useCallback((event: CustomEvent): void => {
     const item = event.target as HTMLCalciteListItemElement | null;
-
     if (!item) {
       return;
     }
 
     const id = String(item.value ?? '');
-
     if (!id) {
       return;
     }
@@ -110,54 +109,62 @@ export function App(): React.JSX.Element {
       const next = exists
         ? current.filter((layerId) => layerId !== id)
         : [...current, id];
-
       item.selected = !exists;
       return next;
     });
-  };
+  }, []);
 
-  const perimeterLayers = featureLayers.filter((layer) =>
-    isPerimeterLayer(layer),
+  const perimeterLayers = useMemo(
+    () => featureLayers.filter((layer) => isPerimeterLayer(layer)),
+    [featureLayers],
   );
 
-  const roadClosureLayers = featureLayers.filter((layer) => isRoadLayer(layer));
-
-  const roadAndTrailLayers = featureLayers.filter(
-    (layer) => isRoadLayer(layer) || isTrailLayer(layer),
+  const roadClosureLayers = useMemo(
+    () => featureLayers.filter((layer) => isRoadLayer(layer)),
+    [featureLayers],
   );
 
-  const handleMapClick = async (
-    event: HTMLArcgisMapElement['arcgisViewClick'],
-  ): Promise<void> => {
-    const { mapPoint } = event.detail;
+  const roadAndTrailLayers = useMemo(
+    () =>
+      featureLayers.filter(
+        (layer) => isRoadLayer(layer) || isTrailLayer(layer),
+      ),
+    [featureLayers],
+  );
 
-    // Update location label for tile group
-    if (
-      typeof mapPoint.latitude === 'number' &&
-      typeof mapPoint.longitude === 'number'
-    ) {
-      const latitude = mapPoint.latitude.toFixed(4);
-      const longitude = mapPoint.longitude.toFixed(4);
-      setLocationLabel(`${latitude}, ${longitude}`);
-    } else {
-      setLocationLabel('Tap map');
-    }
+  const handleMapClick = useCallback(
+    async (event: HTMLArcgisMapElement['arcgisViewClick']): Promise<void> => {
+      const { mapPoint } = event.detail;
 
-    // Burn status: whether click is inside any final fire perimeter
-    const burnStatus = await getBurnStatusAtPoint(mapPoint, perimeterLayers);
-    setBurnStatusValue(burnStatus.score);
-    setBurnStatusLabel(burnStatus.label);
-    setBurnDetail(burnStatus.detail);
+      // Update location label for tile group
+      if (
+        typeof mapPoint.latitude === 'number' &&
+        typeof mapPoint.longitude === 'number'
+      ) {
+        const latitude = mapPoint.latitude.toFixed(4);
+        const longitude = mapPoint.longitude.toFixed(4);
+        setLocationLabel(`${latitude}, ${longitude}`);
+      } else {
+        setLocationLabel('Tap map');
+      }
 
-    // 2) Elevation todo
-    setElevationValue(null);
+      // Burn status: whether click is inside any final fire perimeter
+      const burnStatus = await getBurnStatusAtPoint(mapPoint, perimeterLayers);
+      setBurnStatusValue(burnStatus.score);
+      setBurnStatusLabel(burnStatus.label);
+      setBurnDetail(burnStatus.detail);
 
-    // Suitability based on proximity to closure lines (no score meter)
-    const accessStatus = await getAccessAtPoint(mapPoint, roadClosureLayers);
-    setSuitabilityValue(accessStatus.score);
-    setSuitabilityLabel(accessStatus.label);
-    setAccessDetail(accessStatus.detail);
-  };
+      // 2) Elevation todo
+      setElevationValue(null);
+
+      // Suitability based on proximity to closure lines (no score meter)
+      const accessStatus = await getAccessAtPoint(mapPoint, roadClosureLayers);
+      setSuitabilityValue(accessStatus.score);
+      setSuitabilityLabel(accessStatus.label);
+      setAccessDetail(accessStatus.detail);
+    },
+    [perimeterLayers, roadClosureLayers],
+  );
 
   useEffect(() => {
     const years = [...activeFireYears].sort((a, b) => a - b);
@@ -183,27 +190,14 @@ export function App(): React.JSX.Element {
       });
   }, [featureLayers, activeRoadTrailLayerIds]);
 
+  const openFilters = useCallback(() => setIsFiltersSheetOpen(true), []);
+  const closeFilters = useCallback(() => setIsFiltersSheetOpen(false), []);
+
   useEffect(() => {
-    if (typeof window === 'undefined') {
-      return;
+    if (!isSmallScreen) {
+      setIsFiltersSheetOpen(false);
     }
-
-    const handleResize = (): void => {
-      const isNarrow = window.innerWidth < 680;
-
-      setIsSmallScreen((current) => {
-        if (current !== isNarrow && !isNarrow) {
-          setIsFiltersSheetOpen(false);
-        }
-        return isNarrow;
-      });
-    };
-
-    handleResize();
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  }, [isSmallScreen]);
 
   return (
     // The Shell component is used as a layout for this template
@@ -221,7 +215,7 @@ export function App(): React.JSX.Element {
             slot="content-end"
             icon="gear"
             text="Filters"
-            onClick={() => setIsFiltersSheetOpen(true)}
+            onClick={openFilters}
           ></calcite-action>
         )}
       </calcite-navigation>
@@ -266,7 +260,7 @@ export function App(): React.JSX.Element {
           label="Map filters"
           position="inline-end"
           open={isFiltersSheetOpen}
-          oncalciteSheetClose={() => setIsFiltersSheetOpen(false)}
+          oncalciteSheetClose={closeFilters}
         >
           <LayersPanel
             fireYears={FIREYEARS}
