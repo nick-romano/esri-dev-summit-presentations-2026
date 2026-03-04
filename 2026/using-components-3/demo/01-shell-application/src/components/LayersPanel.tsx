@@ -23,7 +23,7 @@ export function LayersPanel(): React.JSX.Element {
     perimeterLayers.length > 0 ? getLayerColor(perimeterLayers[0]) : undefined;
 
   return (
-    <calcite-panel heading="Will I Find Morels? " className="panel-layers">
+    <calcite-panel heading="Will I Find Morels?" className="panel-layers">
       <calcite-notice slot="footer" open color="brand" kind="warning">
         <div slot="message">
           For illustration purposes only. Always follow local guidelines and
@@ -90,31 +90,34 @@ export function LayersPanel(): React.JSX.Element {
       {roadAndTrailLayers.length > 0 && (
         <calcite-block icon-end="walking" heading="Can I access it?" expanded>
           <calcite-list label="Roads and trails" selection-mode="multiple">
-            {roadAndTrailLayers.map((layer) => (
-              <calcite-list-item
-                key={layer.id}
-                label={layer.title ?? 'USFS layer'}
-                scale="s"
-                value={layer.id}
-                selected={activeRoadTrailLayerIds.includes(layer.id)}
-                oncalciteListItemSelect={handleRoadTrailSelection}
-              >
-                {getLayerColor(layer) && (
-                  <div
-                    slot="content-end"
-                    style={{
-                      width: '1rem',
-                      height: '1rem',
-                      borderRadius: '999px',
-                      opacity: activeRoadTrailLayerIds.includes(layer.id)
-                        ? 1
-                        : 0.5,
-                      backgroundColor: getLayerColor(layer) ?? undefined,
-                    }}
-                  ></div>
-                )}
-              </calcite-list-item>
-            ))}
+            {roadAndTrailLayers.map((layer) => {
+              const layerColor = getLayerColor(layer);
+              return (
+                <calcite-list-item
+                  key={layer.id}
+                  label={layer.title ?? 'USFS layer'}
+                  scale="s"
+                  value={layer.id}
+                  selected={activeRoadTrailLayerIds.includes(layer.id)}
+                  oncalciteListItemSelect={handleRoadTrailSelection}
+                >
+                  {layerColor && (
+                    <div
+                      slot="content-end"
+                      style={{
+                        width: '1rem',
+                        height: '1rem',
+                        borderRadius: '999px',
+                        opacity: activeRoadTrailLayerIds.includes(layer.id)
+                          ? 1
+                          : 0.5,
+                        backgroundColor: layerColor,
+                      }}
+                    ></div>
+                  )}
+                </calcite-list-item>
+              );
+            })}
           </calcite-list>
         </calcite-block>
       )}
