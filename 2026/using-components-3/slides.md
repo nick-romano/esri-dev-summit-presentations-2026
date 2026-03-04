@@ -17,9 +17,12 @@ is: feedback
 
 # Previous session (yesterday)
 
-App Development with Components Part 3: User Experience
+App Development with Components Part 2: Using Frameworks
 
-> TODO: description of session
+> The session touches on current front-end methodologies for topics such as
+> dependency management, asset management, semantic versioning, prebuilt versus
+> built applications that scale, and conveniences offered by frameworks that
+> streamline web mapping app development compared to plain JavaScript.
 
 If you missed the previous session, we have a recording. These 4-part sessions
 build on top of each other
@@ -39,6 +42,35 @@ build on top of each other
 ---
 
 # TODO: ...the rest
+
+---
+
+# Slots - What are they?
+
+- A slot is a placeholder inside a web component that you can fill with your own
+  markup, which can include other components.
+- Components can have multiple slots, and you can choose which slot to fill with
+  your content.
+- This allows for greater flexibility and customization when using web
+  components
+
+---
+
+# Calcite Components and Slots
+
+- Calcite components are designed with slots to allow developers to easily
+  customize and extend their functionality.
+- For example, the `calcite-panel` component has a default slot for the panel
+  content
+- You can also use named slots to place content in specific areas of the
+  component, such as the header or footer
+
+# Map Components and Slots
+
+- the `arcgis-map` component has named slots available to place content in
+  specific areas of the map, such as the top-left, top-right, bottom-left, and
+  bottom-right corners of the map view
+- https://developers.arcgis.com/javascript/latest/references/map-components/components/arcgis-map/#slots
 
 ---
 
