@@ -1,0 +1,19 @@
+body {
+  display: flex;
+  flex-direction: column;
+  background: lightsalmon;
+}
+
+/** calcite-shell should only be in a smaller window of the screen */
+/* calcite-shell {
+  width: 100%;
+  height: 100%;
+  max-width: 800px;
+  max-height: 600px;
+  margin: auto;
+  border: 1px solid var(--calcite-color-border-2);
+  --calcite-shell-background-color: var(--calcite-color-surface-1);
+  --calcite-shell-border-color: var(--calcite-color-border-2);
+  --calcite-shell-border-width: 1px;
+  --calcite-shell-border-radius: var(--calcite-corner-radius-sm);
+} */
