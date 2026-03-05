@@ -41,7 +41,33 @@ build on top of each other
 
 ---
 
-# TODO: ...the rest
+# What you'll get from this session
+
+- A simple mental model for building UI with web components
+- A practical layout pattern using Calcite (shell + panels)
+- How ArcGIS map components fit into that layout (and how slots help)
+- Demo of building a map-centered app with these ideas
+
+---
+layout: two-cols-header
+---
+
+# Getting started: Calcite shell component
+
+::left::
+
+- The `calcite-shell` component provides a flexible layout for your application,
+  with slots for a header, footer, and main content area.
+- It's the foundational component for building a consistent and responsive user
+  interface in your web app, allowing you to easily organize your content and
+  components.
+- It provides slots for embedding additional calcite components, such as
+  navigation, panels, and more, making it easy to create a cohesive user
+  experience.
+
+::right::
+
+![calcite-shell](./assets/calcite-shell.png)
 
 ---
 
@@ -56,14 +82,40 @@ build on top of each other
 
 ---
 
-# Calcite Components and Slots
+# Demo - using the shell component and slots
 
-- Calcite components are designed with slots to allow developers to easily
-  customize and extend their functionality.
-- For example, the `calcite-panel` component has a default slot for the panel
-  content
-- You can also use named slots to place content in specific areas of the
-  component, such as the header or footer
+- We will build a simple shell application that utilizes the `calcite-shell`
+  component and its slots to create a layout for our app.
+
+---
+layout: two-cols-header
+---
+
+# Shell recap
+
+::left::
+
+- The `calcite-shell` component provides a flexible layout for your application,
+  with slots for a navigation header, main content area, and optional side
+  panels.
+
+- It can also be used in other parts of your page, providing structure to easily
+  organize components like alerts, modals, and more.
+
+::right::
+
+![shell-in-arcade-editor](./assets/shell-in-arcade-editor.png)
+
+<style>
+.two-cols-header {
+  column-gap: 6rem; /* Adjust the gap size as needed */
+}
+img {
+    scale: 1.3;
+}
+</style>
+
+---
 
 # Map Components and Slots
 
@@ -71,6 +123,10 @@ build on top of each other
   specific areas of the map, such as the top-left, top-right, bottom-left, and
   bottom-right corners of the map view
 - https://developers.arcgis.com/javascript/latest/references/map-components/components/arcgis-map/#slots
+
+# Reference Element
+
+-
 
 ---
 
