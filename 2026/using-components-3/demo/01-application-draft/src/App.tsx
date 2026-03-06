@@ -1,6 +1,9 @@
+import '@arcgis/map-components/components/arcgis-map';
 import '@esri/calcite-components/components/calcite-shell';
 import '@esri/calcite-components/components/calcite-navigation';
 import '@esri/calcite-components/components/calcite-navigation-logo';
+
+const mapItemId = 'ecaf67baea484e99b1b499131ae8e179';
 
 export function App(): React.JSX.Element {
   return (
@@ -14,7 +17,7 @@ export function App(): React.JSX.Element {
           slot="logo"
         ></calcite-navigation-logo>
       </calcite-navigation>
-      <div style={{ padding: '1rem' }}>Step 00: Calcite shell baseline</div>
+      <arcgis-map id="morel-map" item-id={mapItemId}></arcgis-map>
     </calcite-shell>
   );
 }
