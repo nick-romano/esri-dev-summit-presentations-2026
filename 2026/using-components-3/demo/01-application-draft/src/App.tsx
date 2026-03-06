@@ -1,4 +1,5 @@
 import '@arcgis/map-components/components/arcgis-map';
+import '@arcgis/map-components/components/arcgis-zoom';
 import '@esri/calcite-components/components/calcite-shell';
 import '@esri/calcite-components/components/calcite-navigation';
 import '@esri/calcite-components/components/calcite-navigation-logo';
@@ -17,7 +18,11 @@ export function App(): React.JSX.Element {
           slot="logo"
         ></calcite-navigation-logo>
       </calcite-navigation>
-      <arcgis-map id="morel-map" item-id={mapItemId}></arcgis-map>
+      <arcgis-map id="morel-map" item-id={mapItemId}>
+        <div slot="top-left">top-left slot</div>
+        <div slot="top-right">top-right slot</div>
+        <arcgis-zoom slot="bottom-right" />
+      </arcgis-map>
     </calcite-shell>
   );
 }
