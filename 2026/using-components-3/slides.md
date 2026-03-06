@@ -190,6 +190,20 @@ backgroundSize: 20em 90%
 
 ---
 
+# Start with a Web Map
+
+- We can use a Web Map to easily manage our layers and data, and then use the
+  ArcGIS Maps SDK for JavaScript to build a custom application on top of it.
+- [Web Map link](https://www.arcgis.com/apps/mapviewer/index.html?webmap=ecaf67baea484e99b1b499131ae8e179)
+
+---
+
+# Building the app
+
+- Lets jump into the code.
+
+---
+
 # Next session
 
 [ArcGIS Maps SDK for JavaScript: App Development with Components, Part 4: Extending and Styling](https://registration.esri.com/flow/esri/26epcdev/deveventportal/page/detailed-agenda/session/1761122138829001Iinc)
