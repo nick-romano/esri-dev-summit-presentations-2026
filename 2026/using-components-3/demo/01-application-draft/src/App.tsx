@@ -5,12 +5,15 @@ import '@esri/calcite-components/components/calcite-shell';
 import '@esri/calcite-components/components/calcite-navigation';
 import '@esri/calcite-components/components/calcite-navigation-logo';
 
+import { LayersPanel } from './components/LayersPanel';
 import { MorelPanel } from './components/MorelPanel';
+import { useLayersActions } from './context/LayersContext';
 import { useResultsActions } from './context/ResultsContext';
 
 const mapItemId = 'ecaf67baea484e99b1b499131ae8e179';
 
 export function App(): React.JSX.Element {
+  const { handleViewReady } = useLayersActions();
   const { handleMapClick, registerElevationProfileElement } =
     useResultsActions();
 
@@ -28,11 +31,14 @@ export function App(): React.JSX.Element {
       <arcgis-map
         id="morel-map"
         item-id={mapItemId}
+        onarcgisViewReadyChange={handleViewReady}
         onarcgisViewClick={handleMapClick}
         popup-disabled
         ground="world-elevation"
       >
-        <div slot="top-left">top-left slot</div>
+        <div slot="top-left">
+          <LayersPanel />
+        </div>
         <div slot="top-right">
           <MorelPanel />
         </div>
