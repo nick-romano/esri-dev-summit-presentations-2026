@@ -34,10 +34,10 @@ build on top of each other
 3rd in a 4-part series
 
 - We will cover:
-  - Calcite Design System - creating a layout
-  - @arcgis/map-components - utilizing slots within the map component
-  - @arcgis/map-components - reference-element property
-  - Utilizing Calcite Components within React to develop composable UI elements
+  - `calcite-components` - creating a layout
+  - `@arcgis/map-components` - utilizing slots within the map component
+  - `@arcgis/map-components` - reference-element property
+  - Utilizing both within a demo application to develop composable UI elements
 
 ---
 
@@ -124,9 +124,69 @@ img {
   bottom-right corners of the map view
 - https://developers.arcgis.com/javascript/latest/references/map-components/components/arcgis-map/#slots
 
+---
+
 # Reference Element
 
--
+- Both calcite-components and map-components expose reference-element properties
+- They serve slightly differing purposes:
+  - In calcite components - they are used to position overlays like tooltips and
+    popovers relative to a reference element
+  - In map components - they are used to link a UI component to a map or scene
+    component.
+  - We'll show examples of both in our demo
+
+---
+layout: statement
+---
+
+# Now that we know the basics, lets build an app!
+
+---
+layout: image-right
+image: ./assets/morel.jpeg
+backgroundSize: 20em 70%
+---
+
+# App requirements
+
+- Adam and I both live in Portland, Oregon, known for it's foraging
+  opportunities
+- Spring is coming and that typically means Morels are going to start popping up
+
+---
+layout: statement
+---
+
+## Let's create an app that explores where Morels might be popping up based on environmental conditions
+
+---
+layout: image-right
+image: ./assets/burned-tree.jpg
+backgroundSize: 20em 90%
+---
+
+# Criteria for Morels
+
+- In the west, Morels are easiest to find in areas that have recently
+  experienced a fire
+- They seem to like an elevation > 2500ft and < 6000ft
+- Needs to be public land (e.g. national forest)
+- We need to be able to access the area by road or trail
+
+---
+
+# Design criteria
+
+- We want to be able to easily toggle on and off different layers of data to
+  explore the map
+- Want to visualize recent fires, elevation, and public lands, trails, and
+  access points
+- We want to be able to click on the map and get information about the location,
+  such as:
+  - nearby trails
+  - elevation
+  - whether it's accessible public lands
 
 ---
 
