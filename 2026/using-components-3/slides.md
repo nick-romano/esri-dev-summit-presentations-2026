@@ -5,6 +5,10 @@ mdc: true
 colorSchema: light
 ---
 
+<!--
+- Speaker: Nick
+-->
+
 ## ArcGIS Maps SDK for JavaScript:<br>App Development with Components,<br>Part 3: User Experience
 
 Adam Tirella, Nicholas Romano, Kitty Hurley
@@ -14,6 +18,10 @@ is: feedback
 ---
 
 ---
+
+<!--
+- Speaker: Nick
+-->
 
 # Previous session (yesterday)
 
@@ -29,6 +37,8 @@ build on top of each other
 
 ---
 
+<!--Speaker: Nick-->
+
 # Today's session
 
 3rd in a 4-part series
@@ -41,6 +51,8 @@ build on top of each other
 
 ---
 
+<!--Speaker: Nick-->
+
 # What you'll get from this session
 
 - A simple mental model for building UI with web components
@@ -51,6 +63,8 @@ build on top of each other
 ---
 layout: two-cols-header
 ---
+
+<!--Speaker: Adam-->
 
 # Getting started: Calcite shell component
 
@@ -71,6 +85,8 @@ layout: two-cols-header
 
 ---
 
+<!--Speaker: Adam-->
+
 # Slots - What are they?
 
 - A slot is a placeholder inside a web component that you can fill with your own
@@ -82,14 +98,17 @@ layout: two-cols-header
 
 ---
 
-# Demo - using the shell component and slots
+<!--Speaker: Adam-->
 
-- We will build a simple shell application that utilizes the `calcite-shell`
-  component and its slots to create a layout for our app.
+# Calcite shell slots - visualized
+
+- https://developers.arcgis.com/calcite-design-system/foundations/layouts/#shell-slots
 
 ---
 layout: two-cols-header
 ---
+
+<!--Speaker: Adam-->
 
 # Shell recap
 
@@ -117,6 +136,8 @@ img {
 
 ---
 
+<!--Speaker: Nick-->
+
 # Map Components and Slots
 
 - the `arcgis-map` component has named slots available to place content in
@@ -125,6 +146,8 @@ img {
 - https://developers.arcgis.com/javascript/latest/references/map-components/components/arcgis-map/#slots
 
 ---
+
+<!--Speaker: Nick-->
 
 # Reference Element
 
@@ -140,6 +163,8 @@ img {
 layout: statement
 ---
 
+<!--Speaker: Nick-->
+
 # Now that we know the basics, lets build an app!
 
 ---
@@ -147,6 +172,8 @@ layout: image-right
 image: ./assets/morel.jpeg
 backgroundSize: 20em 70%
 ---
+
+<!--Speaker: Nick-->
 
 # App requirements
 
@@ -158,6 +185,9 @@ backgroundSize: 20em 70%
 layout: statement
 ---
 
+<!--
+- Speaker: Nick-->
+
 ## Let's create an app that explores where Morels might be popping up based on environmental conditions
 
 ---
@@ -165,6 +195,8 @@ layout: image-right
 image: ./assets/burned-tree.jpg
 backgroundSize: 20em 90%
 ---
+
+<!--Speaker: Nick-->
 
 # Criteria for Morels
 
@@ -176,10 +208,11 @@ backgroundSize: 20em 90%
 
 ---
 
+<!--Speaker: Nick-->
+
 # Design criteria
 
-- We want to be able to easily toggle on and off different layers of data to
-  explore the map
+- We want to be able to easily toggle on and off different layers of data
 - Want to visualize recent fires, elevation, and public lands, trails, and
   access points
 - We want to be able to click on the map and get information about the location,
@@ -187,6 +220,52 @@ backgroundSize: 20em 90%
   - nearby trails
   - elevation
   - whether it's accessible public lands
+
+---
+
+<!--
+- Speaker: Adam
+- Touch points: simply explain the shell, how we use the slots on the map components. This is a quicky demo
+-->
+
+# Demo step: layout placeholders
+
+- Demo folder: `demo/00-layout`
+- Header slot (navbar): app title + branding area
+- Map `top-left` slot: placeholder UI for quickly toggling layers on/off
+- Map `top-right` slot: placeholder UI for nearby trails, elevation, and access
+  info
+
+---
+
+<!--
+- Speaker: Adam
+- Touch points: start building out the left panel with real calcite components. Feel free to edit the demo to suite your flow. Touch on the different components used. Quickly show the use of "scale" prop on calcite components and how it can be used to adjust the size of components in a more compact UI like a panel.
+-->
+
+# Demo step: rich left panel (Calcite)
+
+- Demo folder: `demo/00-left-panel`
+
+---
+
+<!--
+- Speaker: Nick
+- Touch points: build a react component that is used multiple times in the right panel. Explain the action and how we use it to trigger the display of additional information in the panel. Show how we use the reference element prop to link the action button to the sheet that has the arcgis-features component.
+-->
+
+# Demo step: rich right panel (Custom UI Components)
+
+- Demo folder: `demo/00-right-panel`
+
+---
+
+# Morel of the story... (Recap)
+
+<!--Speaker: Nick-->
+
+- Map and Calcite components can build rich user experiences
+- We can use reference-element propertyies
 
 ---
 

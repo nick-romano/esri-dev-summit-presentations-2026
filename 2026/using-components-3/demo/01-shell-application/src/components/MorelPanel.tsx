@@ -33,7 +33,7 @@ export function MorelPanel(): React.JSX.Element {
       icon: 'pin',
       description: 'Latitude and longitude of last map click.',
       heading: 'Location',
-      bigNumber: locationLabel,
+      blurb: locationLabel,
       action: {
         label: 'Inspect features at location',
         onClick: inspectFeaturesAtLocation,
@@ -45,7 +45,7 @@ export function MorelPanel(): React.JSX.Element {
       icon: 'drive-time',
       description: burnDetail,
       heading: 'Recent Wildfire',
-      bigNumber: burnStatusLabel,
+      blurb: burnStatusLabel,
       meter: {
         label: 'Burn status',
         min: 0,
@@ -63,7 +63,7 @@ export function MorelPanel(): React.JSX.Element {
           ? 'Elevation at clicked location.'
           : 'Click the map to see elevation.',
       heading: 'Elevation',
-      bigNumber:
+      blurb:
         elevationValue !== null
           ? `${Math.round(elevationValue)} ft`
           : 'Tap map',
@@ -79,7 +79,7 @@ export function MorelPanel(): React.JSX.Element {
       icon: 'walking',
       description: accessDetail,
       heading: 'Access',
-      bigNumber: accessLabel,
+      blurb: accessLabel,
       meter: {
         label: 'Access (distance)',
         min: 0,

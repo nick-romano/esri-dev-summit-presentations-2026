@@ -1,6 +1,6 @@
 {
-  "name": "01-shell-application",
-  "description": "ArcGIS Maps SDK for JavaScript Vite React TSX template",
+  "name": "00-right-panel",
+  "description": "Step demo: add rich Calcite tile panel in arcgis-map top-right slot",
   "private": true,
   "type": "module",
   "scripts": {

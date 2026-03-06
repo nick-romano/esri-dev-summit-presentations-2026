@@ -971,7 +971,7 @@ export async function getWalkingAccessAtPoint(
   trailheadName?: string | null;
   routeGeometry?: Polyline | null;
 }> {
-  const radiusKm = options?.searchRadiusKilometers ?? 5;
+  const radiusKm = options?.searchRadiusKilometers ?? 0.05;
   const graphJoinToleranceMeters = 5;
 
   if (!mapPoint) {
