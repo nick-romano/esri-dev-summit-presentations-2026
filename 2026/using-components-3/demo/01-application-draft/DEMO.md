@@ -23,6 +23,12 @@ This folder is designed for a live, low-risk demo.
 - Escape hatch:
   - `git checkout final`
 
+Notes:
+
+- Checking out tags puts Git in a "detached HEAD" state. That's expected for
+  this workflow.
+- To get back to the step branch (if you need it): `git switch demo-morel-steps`
+
 ## Step script
 
 Each step should take ~1–3 minutes: briefly explain, refresh browser, verify.
