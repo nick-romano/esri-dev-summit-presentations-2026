@@ -4,6 +4,8 @@ import '@esri/calcite-components/components/calcite-shell';
 import '@esri/calcite-components/components/calcite-navigation';
 import '@esri/calcite-components/components/calcite-navigation-logo';
 
+import { MorelPanel } from './components/MorelPanel';
+
 const mapItemId = 'ecaf67baea484e99b1b499131ae8e179';
 
 export function App(): React.JSX.Element {
@@ -20,7 +22,9 @@ export function App(): React.JSX.Element {
       </calcite-navigation>
       <arcgis-map id="morel-map" item-id={mapItemId}>
         <div slot="top-left">top-left slot</div>
-        <div slot="top-right">top-right slot</div>
+        <div slot="top-right">
+          <MorelPanel />
+        </div>
         <arcgis-zoom slot="bottom-right" />
       </arcgis-map>
     </calcite-shell>
