@@ -22,7 +22,6 @@ export type MorelTileProps = {
   className?: string;
   blurb?: React.ReactNode;
   meter?: MorelTileMeterProps;
-  contentTopExtra?: React.ReactNode;
   action?: {
     label: string;
     onClick: () => void;
@@ -38,7 +37,6 @@ export function MorelTile({
   className,
   blurb,
   meter,
-  contentTopExtra,
   action,
   children,
 }: MorelTileProps): React.JSX.Element {
@@ -71,10 +69,6 @@ export function MorelTile({
             value={meter.value}
           ></calcite-meter>
         )
-      ) : null}
-
-      {contentTopExtra != null ? (
-        <div slot="content-top">{contentTopExtra}</div>
       ) : null}
 
       {action ? (

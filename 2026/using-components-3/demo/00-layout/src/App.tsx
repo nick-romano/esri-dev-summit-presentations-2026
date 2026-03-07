@@ -16,12 +16,7 @@ export function App(): React.JSX.Element {
           slot="logo"
         ></calcite-navigation-logo>
       </calcite-navigation>
-      <arcgis-map
-        id="morel-map"
-        item-id={mapItemId}
-        popup-disabled
-        ground="world-elevation"
-      >
+      <arcgis-map id="morel-map" itemId={mapItemId} ground="world-elevation">
         <div slot="top-left" className="layout-slot">
           <calcite-panel
             heading="Layers (placeholder)"

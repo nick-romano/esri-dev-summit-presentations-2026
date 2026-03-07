@@ -258,6 +258,11 @@ backgroundSize: 20em 90%
 
 - Demo folder: `demo/00-right-panel`
 
+- Calcite tile
+  https://developers.arcgis.com/calcite-design-system/components/tile/
+- Calcite meter
+  https://developers.arcgis.com/calcite-design-system/components/meter/
+
 ---
 
 # Morel of the story... (Recap)

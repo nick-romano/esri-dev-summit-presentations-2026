@@ -37,9 +37,8 @@ export function App(): React.JSX.Element {
       </calcite-navigation>
       <arcgis-map
         id="morel-map"
-        item-id={mapItemId}
+        itemId={mapItemId}
         onarcgisViewReadyChange={handleViewReady}
-        popup-disabled
         ground="world-elevation"
       >
         {!isSmallScreen && (

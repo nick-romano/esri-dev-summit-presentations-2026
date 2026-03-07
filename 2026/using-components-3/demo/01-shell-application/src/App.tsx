@@ -1,6 +1,7 @@
 // Individual imports for each Map, Chart and Calcite component
 import '@arcgis/map-components/components/arcgis-map';
 import '@arcgis/map-components/components/arcgis-elevation-profile';
+import '@arcgis/map-components/components/arcgis-features';
 import '@arcgis/map-components/components/arcgis-zoom';
 import '@esri/calcite-components/components/calcite-shell';
 import '@esri/calcite-components/components/calcite-navigation';
@@ -46,10 +47,10 @@ export function App(): React.JSX.Element {
       {/* The Map component fits to the size of the parent element  */}
       <arcgis-map
         id="morel-map"
-        item-id={mapItemId}
+        itemId={mapItemId}
         onarcgisViewReadyChange={handleViewReady}
         onarcgisViewClick={handleMapClick}
-        popup-disabled
+        popupDisabled
         ground="world-elevation"
       >
         {/* We'll use the map slots to position additional components */}
