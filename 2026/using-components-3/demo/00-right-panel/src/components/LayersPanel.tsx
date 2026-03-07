@@ -6,8 +6,6 @@ import '@esri/calcite-components/components/calcite-block';
 import '@esri/calcite-components/components/calcite-shell';
 import '@esri/calcite-components/components/calcite-sheet';
 import '@esri/calcite-components/components/calcite-slider';
-import '@esri/calcite-components/components/calcite-label';
-import '@arcgis/map-components/components/arcgis-features';
 
 import { getLayerColor } from '../utils/mapUtils';
 import { useLayersActions, useLayersState } from '../context/LayersContext';
@@ -28,47 +26,112 @@ export function LayersPanel(): React.JSX.Element {
 
   return (
     <calcite-panel heading="Will I Find Morels?" className="panel-layers">
-      <calcite-shell className="unstyled-shell">
-        <calcite-notice slot="footer" open color="brand" kind="warning">
-          <div slot="message">
-            For illustration purposes only. Always follow local guidelines and
-            regulations when foraging.
-          </div>
-        </calcite-notice>
+      <calcite-notice slot="footer" open color="brand" kind="warning">
+        <div slot="message">
+          For illustration purposes only. Always follow local guidelines and
+          regulations when foraging.
+        </div>
+      </calcite-notice>
 
-        <calcite-block
-          icon-end="drive-time"
-          heading="Has it burned recently?"
-          expanded
-          scale="s"
+      <calcite-block
+        icon-end="drive-time"
+        heading="Has it burned recently?"
+        expanded
+      >
+        <calcite-list
+          label="Fire occurrence by year"
+          selection-mode="multiple"
+          selection-appearance="border"
         >
+          {fireYears.map((year, index) => {
+            const isSelected = activeFireYears.includes(year);
+            return (
+              <calcite-list-item
+                key={year}
+                label={`${year} Fire Occurrence`}
+                value={year}
+                selected={isSelected}
+                oncalciteListItemSelect={handleFireYearSelection}
+                style={{
+                  '--calcite-list-selection-border-color': `color-mix(in srgb, ${perimeterColor} calc(100% - ${(index - 1) * 20}%), transparent)`,
+                }}
+              >
+                {perimeterColor && (
+                  <div
+                    slot="content-end"
+                    style={{
+                      width: '1rem',
+                      height: '1rem',
+                      borderRadius: '999px',
+                      backgroundColor: isSelected
+                        ? perimeterColor
+                        : 'transparent',
+                      borderColor: isSelected ? 'transparent' : perimeterColor,
+                      border: '1px solid transparent',
+                      // todo - get unique feature type opacity from layer instead of doing this manually
+                      opacity: `calc(100% - ${(index - 1) * 20}%)`,
+                    }}
+                  ></div>
+                )}
+              </calcite-list-item>
+            );
+          })}
+        </calcite-list>
+      </calcite-block>
+
+      <calcite-block
+        icon-end="altitude"
+        heading="Is the elevation right?"
+        expanded
+        className="block-elevation"
+      >
+        <calcite-label>
+          <calcite-slider
+            minValue={2000}
+            maxValue={6000}
+            max={10000}
+            min={0}
+            groupSeparator
+            labelHandles
+            precise
+          ></calcite-slider>
+        </calcite-label>
+      </calcite-block>
+
+      {roadAndTrailLayers.length > 0 && (
+        <calcite-block icon-end="walking" heading="Can I access it?" expanded>
           <calcite-list
-            label="Fire occurrence by year"
+            label="Roads and trails"
             selection-mode="multiple"
-            scale="s"
+            selection-appearance="border"
           >
-            {fireYears.map((year) => {
-              const isSelected = activeFireYears.includes(year);
+            {roadAndTrailLayers.map((layer) => {
+              const layerColor = getLayerColor(layer);
+              const isSelected = activeRoadTrailLayerIds.includes(layer.id);
+
               return (
                 <calcite-list-item
-                  key={year}
-                  label={`${year} Fire Occurrence`}
-                  scale="s"
-                  value={year}
+                  key={layer.id}
+                  label={layer.title ?? 'USFS layer'}
+                  value={layer.id}
                   selected={isSelected}
-                  oncalciteListItemSelect={handleFireYearSelection}
+                  oncalciteListItemSelect={handleRoadTrailSelection}
+                  style={{
+                    '--calcite-list-selection-border-color': layerColor,
+                  }}
                 >
-                  {/* todo perform filter here not hide show like roads - based on FIREYEAR */}
-                  {/* todo - need to source this color differently - its all one layer, roads work as they are different layers */}
-
-                  {perimeterColor && (
+                  {layerColor && (
                     <div
                       slot="content-end"
                       style={{
                         width: '1rem',
                         height: '1rem',
                         borderRadius: '999px',
-                        backgroundColor: perimeterColor,
+                        backgroundColor: isSelected
+                          ? layerColor
+                          : 'transparent',
+                        borderColor: isSelected ? 'transparent' : layerColor,
+                        border: '1px solid transparent',
                       }}
                     ></div>
                   )}
@@ -77,67 +140,7 @@ export function LayersPanel(): React.JSX.Element {
             })}
           </calcite-list>
         </calcite-block>
-
-        <calcite-block
-          icon-end="altitude"
-          heading="Is the elevation right?"
-          expanded
-          className="block-elevation"
-          scale="s"
-        >
-          <calcite-label>
-            <calcite-slider
-              scale="s"
-              minValue={2000}
-              maxValue={6000}
-              max={10000}
-              min={0}
-              groupSeparator
-              labelHandles
-              precise
-            ></calcite-slider>
-          </calcite-label>
-        </calcite-block>
-
-        {roadAndTrailLayers.length > 0 && (
-          <calcite-block icon-end="walking" heading="Can I access it?" expanded>
-            <calcite-list
-              label="Roads and trails"
-              selection-mode="multiple"
-              scale="s"
-            >
-              {roadAndTrailLayers.map((layer) => {
-                const layerColor = getLayerColor(layer);
-                return (
-                  <calcite-list-item
-                    key={layer.id}
-                    label={layer.title ?? 'USFS layer'}
-                    scale="s"
-                    value={layer.id}
-                    selected={activeRoadTrailLayerIds.includes(layer.id)}
-                    oncalciteListItemSelect={handleRoadTrailSelection}
-                  >
-                    {layerColor && (
-                      <div
-                        slot="content-end"
-                        style={{
-                          width: '1rem',
-                          height: '1rem',
-                          borderRadius: '999px',
-                          opacity: activeRoadTrailLayerIds.includes(layer.id)
-                            ? 1
-                            : 0.5,
-                          backgroundColor: layerColor,
-                        }}
-                      ></div>
-                    )}
-                  </calcite-list-item>
-                );
-              })}
-            </calcite-list>
-          </calcite-block>
-        )}
-      </calcite-shell>
+      )}
     </calcite-panel>
   );
 }

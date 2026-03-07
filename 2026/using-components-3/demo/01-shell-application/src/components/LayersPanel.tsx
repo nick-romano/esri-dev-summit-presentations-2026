@@ -38,8 +38,12 @@ export function LayersPanel(): React.JSX.Element {
         heading="Has it burned recently?"
         expanded
       >
-        <calcite-list label="Fire occurrence by year" selection-mode="multiple">
-          {fireYears.map((year) => {
+        <calcite-list
+          label="Fire occurrence by year"
+          selection-mode="multiple"
+          selection-appearance="border"
+        >
+          {fireYears.map((year, index) => {
             const isSelected = activeFireYears.includes(year);
             return (
               <calcite-list-item
@@ -48,10 +52,10 @@ export function LayersPanel(): React.JSX.Element {
                 value={year}
                 selected={isSelected}
                 oncalciteListItemSelect={handleFireYearSelection}
+                style={{
+                  '--calcite-list-selection-border-color': `color-mix(in srgb, ${perimeterColor} calc(100% - ${(index - 1) * 20}%), transparent)`,
+                }}
               >
-                {/* todo perform filter here not hide show like roads - based on FIREYEAR */}
-                {/* todo - need to source this color differently - its all one layer, roads work as they are different layers */}
-
                 {perimeterColor && (
                   <div
                     slot="content-end"
@@ -59,7 +63,13 @@ export function LayersPanel(): React.JSX.Element {
                       width: '1rem',
                       height: '1rem',
                       borderRadius: '999px',
-                      backgroundColor: perimeterColor,
+                      backgroundColor: isSelected
+                        ? perimeterColor
+                        : 'transparent',
+                      borderColor: isSelected ? 'transparent' : perimeterColor,
+                      border: '1px solid transparent',
+                      // todo - get unique feature type opacity from layer instead of doing this manually
+                      opacity: `calc(100% - ${(index - 1) * 20}%)`,
                     }}
                   ></div>
                 )}
@@ -90,16 +100,25 @@ export function LayersPanel(): React.JSX.Element {
 
       {roadAndTrailLayers.length > 0 && (
         <calcite-block icon-end="walking" heading="Can I access it?" expanded>
-          <calcite-list label="Roads and trails" selection-mode="multiple">
+          <calcite-list
+            label="Roads and trails"
+            selection-mode="multiple"
+            selection-appearance="border"
+          >
             {roadAndTrailLayers.map((layer) => {
               const layerColor = getLayerColor(layer);
+              const isSelected = activeRoadTrailLayerIds.includes(layer.id);
+
               return (
                 <calcite-list-item
                   key={layer.id}
                   label={layer.title ?? 'USFS layer'}
                   value={layer.id}
-                  selected={activeRoadTrailLayerIds.includes(layer.id)}
+                  selected={isSelected}
                   oncalciteListItemSelect={handleRoadTrailSelection}
+                  style={{
+                    '--calcite-list-selection-border-color': layerColor,
+                  }}
                 >
                   {layerColor && (
                     <div
@@ -108,10 +127,11 @@ export function LayersPanel(): React.JSX.Element {
                         width: '1rem',
                         height: '1rem',
                         borderRadius: '999px',
-                        opacity: activeRoadTrailLayerIds.includes(layer.id)
-                          ? 1
-                          : 0.5,
-                        backgroundColor: layerColor,
+                        backgroundColor: isSelected
+                          ? layerColor
+                          : 'transparent',
+                        borderColor: isSelected ? 'transparent' : layerColor,
+                        border: '1px solid transparent',
                       }}
                     ></div>
                   )}
