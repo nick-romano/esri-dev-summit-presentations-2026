@@ -1,39 +1,10 @@
-#root,
-html,
-body {
-  background-color: var(--calcite-ui-foreground-2);
-  height: 100%;
-  margin: 0;
+.content-panel {
+  --calcite-panel-corner-radius: var(--calcite-corner-radius-sm);
+  --calcite-panel-shadow: var(--calcite-shadow-md);
+  width: 20rem;
 }
 
-calcite-meter {
-  width: 10rem;
-}
-
-calcite-tile {
-  margin: 0.5rem;
-  width: 12rem;
-  --calcite-tile-corner-radius: var(--calcite-corner-radius-sm);
-  --calcite-tile-background-color: color-mix(
-    in srgb,
-    var(--calcite-color-surface-1) 95%,
-    transparent
-  );
-}
-
-calcite-panel > calcite-block:not(.block-elevation) {
-  --calcite-block-content-space: 0;
-}
-.block-elevation {
-  --calcite-block-content-space: 0;
-}
-
-.panel-morel {
-  border-block-start: 1px solid var(--calcite-color-border-2);
-}
-
-.panel-layers {
-  width: 18rem;
+.layers-panel {
   --calcite-color-background: color-mix(
     in srgb,
     var(--calcite-color-surface-1) 80%,
@@ -41,72 +12,7 @@ calcite-panel > calcite-block:not(.block-elevation) {
   );
   --calcite-color-foreground-1: color-mix(
     in srgb,
-    var(--calcite-color-surface-1) 60%,
-    transparent
-  );
-  --calcite-panel-corner-radius: var(--calcite-corner-radius-sm);
-  --calcite-panel-shadow: var(--calcite-shadow-md);
-}
-
-.panel-right {
-  width: 20rem;
-  --calcite-color-background: color-mix(
-    in srgb,
     var(--calcite-color-surface-1) 80%,
     transparent
   );
-  --calcite-panel-corner-radius: var(--calcite-corner-radius-sm);
-  --calcite-panel-shadow: var(--calcite-shadow-md);
-}
-
-.layout-slot {
-  padding: 0.75rem;
-}
-
-.layout-panel-content {
-  padding: 0.75rem;
-}
-
-.layout-panel-lede {
-  margin: 0 0 0.5rem;
-}
-
-.layout-panel-list {
-  margin: 0;
-  padding-inline-start: 1.25rem;
-}
-
-.panel-layers calcite-block {
-  --calcite-color-foreground-1: transparent;
-}
-
-.big-number {
-  font-size: 1rem;
-  font-weight: bold;
-}
-
-.unstyled-shell {
-  position: unset;
-  inset: unset;
-  display: unset;
-  block-size: unset;
-  inline-size: unset;
-}
-
-.popup-content {
-  /** constrain height of arcgis-features to container */
-  display: flex;
-  max-height: 100%;
-}
-
-.elevation-profile-hidden {
-  position: absolute !important;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
 }

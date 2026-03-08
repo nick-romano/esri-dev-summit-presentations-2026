@@ -47,31 +47,30 @@ export function App(): React.JSX.Element {
           </div>
         )}
 
-        <div slot="top-right" className="layout-slot">
-          <calcite-panel
-            heading="Nearby info (placeholder)"
-            className="panel-right"
-          >
-            <div className="layout-panel-content">
-              <p className="layout-panel-lede">
-                This is where we’ll show details about the clicked location.
-              </p>
-              <ul className="layout-panel-list">
-                <li>Fire recency score</li>
-                <li>Elevation</li>
-                <li>Access via nearby roads/trails</li>
-              </ul>
+        <calcite-panel
+          heading="Top Right Slot"
+          icon="dock-right"
+          className="content-panel"
+          slot="top-right"
+        >
+          <calcite-notice open slot="content-top">
+            <div slot="message">
+              We'll populate this slot with content in the next step
             </div>
-          </calcite-panel>
-        </div>
-
+          </calcite-notice>
+          <ul>
+            <li>Fire recency</li>
+            <li>Elevation</li>
+            <li>Trail access</li>
+          </ul>
+        </calcite-panel>
         <arcgis-zoom slot="bottom-right" />
       </arcgis-map>
 
       {isSmallScreen && (
         <calcite-sheet
           label="Map filters"
-          position="inline-end"
+          position="block-end"
           open={isFiltersSheetOpen}
           oncalciteSheetClose={closeFilters}
         >
