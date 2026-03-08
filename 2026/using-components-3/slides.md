@@ -66,46 +66,29 @@ layout: two-cols-header
 
 <!--Speaker: Adam-->
 
-# Getting started: Calcite shell component
+# Shell component use cases
 
 ::left::
 
-- The `calcite-shell` component provides a flexible layout for your application,
-  with slots for a header, footer, slots for content, and a main content area.
-- It's the foundational component for constructing a layout for your web app,
-  allowing you to easily organize your content and components.
-- It provides slots for embedding additional calcite components, such as
-  navigation, panels, and more, making it easy to create a cohesive user
-  experience.
-- Multiple Shells can be used to craft complex layouts, and it can be used in
-  tandem with `arcgis-map` and `arcgis-scene` components.
+- Flexible layout container for your application
+- Provides slots to organize content and controls
+- Can be the entire app or part of an app
 
 ::right::
 
-![calcite-shell](./assets/calcite-shell.png)
+![simple shell example](./assets/shell-simple.png)
 
 ---
 
 <!--Speaker: Adam-->
 
-# Slots - What are they?
+# Shell component use cases
 
-- A slot is a placeholder inside a web component that you can fill with your own
-  markup, which can include other components.
-- Components can have multiple slots, and you can choose which slot to fill with
-  your content.
-- This allows for greater flexibility and customization when using web
-  components
+- Supports simple and complex layouts
+- Can be nested and embedded
+- Pair with `arcgis-map` and `arcgis-scene`
 
----
-
-<!--Speaker: Adam-->
-
-# Calcite shell slots - visualized
-
-- https://developers.arcgis.com/calcite-design-system/foundations/layouts/#shell-slots
-
-- https://developers.arcgis.com/calcite-design-system/sample-code
+&nbsp; ![complex shell example](./assets/shell-complex.png)
 
 ---
 layout: two-cols-header
@@ -113,28 +96,44 @@ layout: two-cols-header
 
 <!--Speaker: Adam-->
 
-# Shell recap
+# Learning about slots
 
 ::left::
 
-- The `calcite-shell` component provides a flexible layout for your application,
-  with slots for content, header, and footer, and main content.
+- Simply, a place to put things
+- Core web component capability like events, methods, and properties
+- Intentionally position content, controls, and components
 
-- It can also be used in other parts of your page, providing structure to easily
-  organize components like alerts, dialogs, and more.
+- [Calcite docs - slots as a core concept](https://developers.arcgis.com/calcite-design-system/core-concepts/#slots)
 
 ::right::
 
-![shell-in-arcade-editor](./assets/shell-in-arcade-editor.png)
+![dialog slots example](./assets/slots-dialog.png)
 
-<style>
-.two-cols-header {
-  column-gap: 6rem; /* Adjust the gap size as needed */
-}
-img {
-    scale: 1.3;
-}
-</style>
+![dialog slots example](./assets/slots-notice.png)
+
+---
+layout: two-cols-header
+---
+
+<!--Speaker: Adam-->
+
+# Slots in Shell
+
+::left::
+
+- `panel-start`, `panel-end`, `panel-top`, and `panel-bottom` slots organize
+  content
+- Use with Shell Panels, Panels, and Blocks to organize content and controls
+- Default slot for `arcgis-map` and `arcgis-scene`
+- Additional `header` and `footer` slots
+
+- [Calcite docs - layout + shell slots](https://developers.arcgis.com/calcite-design-system/foundations/layouts/#shell-slots)
+- [Calcite docs - sample code](https://developers.arcgis.com/calcite-design-system/sample-code)
+
+::right::
+
+![shell slots example](./assets/shell-slots.png)
 
 ---
 
@@ -243,7 +242,7 @@ backgroundSize: 20em 90%
 
 <!--
 - Speaker: Adam
-- Touch points: start building out the left panel with real calcite components. Feel free to edit the demo to suite your flow. Touch on the different components used. Quickly show the use of "scale" prop on calcite components and how it can be used to adjust the size of components in a more compact UI like a panel. Use List Item slots and List configuration for a unique interactive legend display.
+- Touch points: start building out the left panel with real calcite components. Touch on the different components used. Use List Item slots and List configuration for a unique interactive legend display.
 -->
 
 # Demo step: rich left panel (Calcite)
