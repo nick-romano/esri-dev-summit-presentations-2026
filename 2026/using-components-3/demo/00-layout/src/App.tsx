@@ -5,7 +5,7 @@ import '@esri/calcite-components/components/calcite-navigation-logo';
 import '@esri/calcite-components/components/calcite-panel';
 import '@esri/calcite-components/components/calcite-shell';
 
-const mapItemId = 'ecaf67baea484e99b1b499131ae8e179';
+const mapItemId = '20398bf380294ec49cea316c51ea8fc4';
 export function App(): React.JSX.Element {
   return (
     <calcite-shell content-behind>
