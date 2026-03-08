@@ -71,13 +71,14 @@ layout: two-cols-header
 ::left::
 
 - The `calcite-shell` component provides a flexible layout for your application,
-  with slots for a header, footer, and main content area.
-- It's the foundational component for building a consistent and responsive user
-  interface in your web app, allowing you to easily organize your content and
-  components.
+  with slots for a header, footer, slots for content, and a main content area.
+- It's the foundational component for constructing a layout for your web app,
+  allowing you to easily organize your content and components.
 - It provides slots for embedding additional calcite components, such as
   navigation, panels, and more, making it easy to create a cohesive user
   experience.
+- Multiple Shells can be used to craft complex layouts, and it can be used in
+  tandem with `arcgis-map` and `arcgis-scene` components.
 
 ::right::
 
@@ -104,6 +105,8 @@ layout: two-cols-header
 
 - https://developers.arcgis.com/calcite-design-system/foundations/layouts/#shell-slots
 
+- https://developers.arcgis.com/calcite-design-system/sample-code
+
 ---
 layout: two-cols-header
 ---
@@ -115,11 +118,10 @@ layout: two-cols-header
 ::left::
 
 - The `calcite-shell` component provides a flexible layout for your application,
-  with slots for a navigation header, main content area, and optional side
-  panels.
+  with slots for content, header, and footer, and main content.
 
 - It can also be used in other parts of your page, providing structure to easily
-  organize components like alerts, modals, and more.
+  organize components like alerts, dialogs, and more.
 
 ::right::
 
@@ -201,10 +203,11 @@ backgroundSize: 20em 90%
 # Criteria for Morels
 
 - In the west, Morels are easiest to find in areas that have recently
-  experienced a fire
-- They seem to like an elevation > 2500ft and < 6000ft
-- Needs to be public land (e.g. national forest)
-- We need to be able to access the area by road or trail
+  experienced a fire. Additionally...
+- Ideal elevation of > 2500ft and < 6000ft
+- Within public land (e.g. national forest)
+- Accessible via public trailhead / campsite
+- Within a 2 hour drive from Portland
 
 ---
 
@@ -214,12 +217,12 @@ backgroundSize: 20em 90%
 
 - We want to be able to easily toggle on and off different layers of data
 - Want to visualize recent fires, elevation, and public lands, trails, and
-  access points
+  access points.
 - We want to be able to click on the map and get information about the location,
   such as:
   - nearby trails
   - elevation
-  - whether it's accessible public lands
+  - if it is public land
 
 ---
 
@@ -240,12 +243,19 @@ backgroundSize: 20em 90%
 
 <!--
 - Speaker: Adam
-- Touch points: start building out the left panel with real calcite components. Feel free to edit the demo to suite your flow. Touch on the different components used. Quickly show the use of "scale" prop on calcite components and how it can be used to adjust the size of components in a more compact UI like a panel.
+- Touch points: start building out the left panel with real calcite components. Feel free to edit the demo to suite your flow. Touch on the different components used. Quickly show the use of "scale" prop on calcite components and how it can be used to adjust the size of components in a more compact UI like a panel. Use List Item slots and List configuration for a unique interactive legend display.
 -->
 
 # Demo step: rich left panel (Calcite)
 
 - Demo folder: `demo/00-left-panel`
+
+- Calcite panel
+  https://developers.arcgis.com/calcite-design-system/components/panel/
+- Calcite block
+  https://developers.arcgis.com/calcite-design-system/components/block/
+- Calcite list
+  https://developers.arcgis.com/calcite-design-system/components/list/
 
 ---
 
