@@ -153,11 +153,24 @@ backgroundSize: 65%
 - They serve slightly differing purposes:
   - <b>Calcite</b> - position an element relative to another element (e.g.
     tooltip to button)
-  - <b>Map Components</b> - link a UI element to a specific location on the map
+  - <b>Map Components</b> - link a "furniture" component to a arcgis-map or
+    arcgis-scene component
 
-<!--
-![reference element example](./assets/calcite-tooltip-reference-element.gif)
--->
+---
+
+# Map components and reference element
+
+<img class="img" src="./assets/map-components-reference-element.png" alt="referenceElement in calcite-components" />
+
+<style>
+  .img {
+    display: block;
+    width: 60%;
+    margin-top: 0.75rem;
+    justify-self: center;
+  }
+
+</style>
 
 ---
 layout: statement
@@ -201,7 +214,7 @@ backgroundSize: 20em 90%
 # Criteria for Morels
 
 - In the west, Morels are easiest to find in areas that have recently
-  experienced a fire. Additionally...
+  experienced a fire
 - Ideal elevation of > 2500ft and < 6000ft
 - Within public land (e.g. national forest)
 - Accessible via public trailhead / campsite
