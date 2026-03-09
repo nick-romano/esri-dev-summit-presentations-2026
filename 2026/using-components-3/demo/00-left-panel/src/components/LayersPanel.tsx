@@ -200,11 +200,10 @@ export function LayersPanel(): React.JSX.Element {
     return RECREATIONITEMS.map((item) => {
       const isSelected = activeRecreationTypes.includes(item.value);
 
-      const itemColor = baseColor;
-
       const graphicType =
         item.value === 'trailhead' ? 'trailhead' : 'campground';
 
+      const itemColor = graphicType === 'trailhead' ? '#fdffd6' : '#b6f79e';
       return (
         <LayerListItem
           key={item.key}

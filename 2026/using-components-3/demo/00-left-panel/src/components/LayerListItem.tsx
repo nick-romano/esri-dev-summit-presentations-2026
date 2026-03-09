@@ -23,12 +23,6 @@ export function LayerListItem({
   iconEnd,
   children,
 }: Readonly<LayerListItemProps>): React.JSX.Element {
-  const color =
-    label === 'Trailheads'
-      ? '#fdffd6'
-      : label === 'Campgrounds'
-        ? '#b6f79e'
-        : borderColor;
   return (
     <calcite-list-item
       key={itemKey}
@@ -40,7 +34,7 @@ export function LayerListItem({
       icon-end={iconEnd}
       style={
         {
-          '--calcite-list-selection-border-color': color,
+          '--calcite-list-selection-border-color': borderColor,
         } as CSSProperties
       }
     >
