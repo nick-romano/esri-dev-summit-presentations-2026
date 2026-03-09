@@ -7,39 +7,31 @@ import '@esri/calcite-components/components/calcite-action';
 import '@esri/calcite-components/components/calcite-sheet';
 import '@esri/calcite-components/components/calcite-panel';
 import '@esri/calcite-components/components/calcite-shell';
+import '@esri/calcite-components/components/calcite-shell-panel';
 
 import { LayersPanel } from './components/LayersPanel';
 import { MorelPanel } from './components/MorelPanel';
 import { useLayersActions } from './context/LayersContext';
 import { useResultsActions } from './context/ResultsContext';
 import { useUIActions, useUIState } from './context/UIContext';
+import { DisclaimerNotice } from './components/DisclaimerNotice';
 
 const mapItemId = 'ecaf67baea484e99b1b499131ae8e179';
 export function App(): React.JSX.Element {
   const { handleViewReady } = useLayersActions();
   const { handleMapClick, registerElevationProfileElement } =
     useResultsActions();
-  const { isSmallScreen, isFiltersSheetOpen, isPopupOpen } = useUIState();
-  const { openFilters, closeFilters, handleFeaturesSheetClose } =
-    useUIActions();
+  const { isSmallScreen, isPopupOpen } = useUIState();
+  const { handleFeaturesSheetClose } = useUIActions();
 
   return (
-    <calcite-shell content-behind>
+    <calcite-shell>
       <calcite-navigation slot="header">
         <calcite-navigation-logo
           heading="Morel of the Story"
           description="Potential gathering spots"
           slot="logo"
         ></calcite-navigation-logo>
-
-        {isSmallScreen && (
-          <calcite-action
-            slot="content-end"
-            icon="gear"
-            text="Filters"
-            onClick={openFilters}
-          ></calcite-action>
-        )}
       </calcite-navigation>
       <arcgis-map
         id="morel-map"
@@ -77,14 +69,15 @@ export function App(): React.JSX.Element {
       </arcgis-map>
 
       {isSmallScreen && (
-        <calcite-sheet
-          label="Map filters"
-          position="inline-end"
-          open={isFiltersSheetOpen}
-          oncalciteSheetClose={closeFilters}
-        >
+        <calcite-shell-panel label="Map filters" slot="panel-top">
           <LayersPanel />
-        </calcite-sheet>
+        </calcite-shell-panel>
+      )}
+
+      {isSmallScreen && (
+        <calcite-panel slot="footer">
+          <DisclaimerNotice />
+        </calcite-panel>
       )}
 
       <calcite-sheet

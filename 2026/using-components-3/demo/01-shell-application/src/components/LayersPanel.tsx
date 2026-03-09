@@ -5,10 +5,34 @@ import '@esri/calcite-components/components/calcite-notice';
 import '@esri/calcite-components/components/calcite-block';
 import '@esri/calcite-components/components/calcite-shell';
 import '@esri/calcite-components/components/calcite-sheet';
-import '@esri/calcite-components/components/calcite-slider';
+import '@esri/calcite-components/components/calcite-action';
+import '@esri/calcite-components/components/calcite-tooltip';
 
-import { getLayerColor } from '../utils/mapUtils';
+import { useEffect, useState } from 'react';
+import { LayerListItem } from './LayerListItem';
+
+import {
+  getLayerColor,
+  computeOutOfScale,
+  handleZoomToNorthwest,
+} from '../utils/mapUtilsUi';
+import { LayerGraphic } from './LayerGraphic';
 import { useLayersActions, useLayersState } from '../context/LayersContext';
+import { useUIState } from '../context/UIContext';
+import { DisclaimerNotice } from '../components/DisclaimerNotice';
+
+const RECREATIONITEMS = [
+  {
+    key: 'trailhead',
+    label: 'Trailheads',
+    value: 'trailhead',
+  },
+  {
+    key: 'campground',
+    label: 'Campgrounds',
+    value: 'campground',
+  },
+];
 
 export function LayersPanel(): React.JSX.Element {
   const {
@@ -16,128 +40,279 @@ export function LayersPanel(): React.JSX.Element {
     activeFireYears,
     perimeterLayers,
     roadAndTrailLayers,
+    recreationSitesLayers,
+    driveTimeLayers,
     activeRoadTrailLayerIds,
+    activeRecreationTypes,
+    activeDriveTimeLayerIds,
   } = useLayersState();
-  const { handleFireYearSelection, handleRoadTrailSelection } =
-    useLayersActions();
+  const {
+    handleFireYearSelection,
+    handleRoadTrailSelection,
+    handleRecreationTypeSelection,
+    handleDriveTimeSelection,
+  } = useLayersActions();
+
+  const [outOfScaleLayerIds, setOutOfScaleLayerIds] = useState<string[]>([]);
+  const { isSmallScreen } = useUIState();
+
+  useEffect(() => {
+    const mapElement = document.getElementById('morel-map') as
+      | (HTMLElement & {
+          view?: {
+            scale?: number;
+            watch?: (
+              prop: string,
+              callback: (...args: unknown[]) => void,
+            ) => { remove: () => void } | undefined;
+          };
+        })
+      | null;
+
+    const view = mapElement?.view;
+    if (!view || typeof view.scale !== 'number') {
+      return;
+    }
+
+    const layersToTrack = [
+      ...perimeterLayers,
+      ...roadAndTrailLayers,
+      ...recreationSitesLayers,
+      ...driveTimeLayers,
+    ];
+
+    const compute = (): void => {
+      const currentScale = view.scale ?? 0;
+      const nextIds = computeOutOfScale(
+        layersToTrack as {
+          id?: string;
+          minScale?: number;
+          maxScale?: number;
+        }[],
+        currentScale,
+      );
+
+      setOutOfScaleLayerIds(nextIds);
+    };
+
+    compute();
+
+    const handle =
+      typeof view.watch === 'function'
+        ? view.watch('scale', () => {
+            compute();
+          })
+        : undefined;
+
+    return () => {
+      if (handle && typeof handle.remove === 'function') {
+        handle.remove();
+      }
+    };
+  }, [
+    perimeterLayers,
+    roadAndTrailLayers,
+    recreationSitesLayers,
+    driveTimeLayers,
+  ]);
 
   const perimeterColor =
     perimeterLayers.length > 0 ? getLayerColor(perimeterLayers[0]) : undefined;
 
+  const renderFireYearItems = (): React.JSX.Element[] =>
+    fireYears.map((year, index) => {
+      const isSelected = activeFireYears.includes(year);
+      const selectionBorderColor = perimeterColor
+        ? `color-mix(in srgb, ${perimeterColor} calc(100% - ${(index - 1) * 20}%), transparent)`
+        : undefined;
+
+      const perimeterLayerId = perimeterLayers[0]?.id;
+      const isOutOfScale = perimeterLayerId
+        ? outOfScaleLayerIds.includes(perimeterLayerId)
+        : false;
+
+      return (
+        <calcite-list-item
+          key={year}
+          label={`${year} Fire Occurrence`}
+          value={year}
+          selected={isSelected}
+          disabled={isOutOfScale}
+          icon-end={isOutOfScale ? 'layer-hide' : undefined}
+          oncalciteListItemSelect={handleFireYearSelection}
+          style={{
+            '--calcite-list-selection-border-color': selectionBorderColor,
+          }}
+        >
+          {perimeterColor && (
+            <LayerGraphic
+              color={perimeterColor}
+              isSelected={isSelected}
+              extraStyles={{
+                opacity: `calc(100% - ${(index - 1) * 20}%)`,
+              }}
+            />
+          )}
+        </calcite-list-item>
+      );
+    });
+
+  const renderRoadAndTrailItems = (): React.JSX.Element[] =>
+    roadAndTrailLayers.map((layer) => {
+      const layerColor = getLayerColor(layer);
+      const isSelected = activeRoadTrailLayerIds.includes(layer.id);
+      const isOutOfScale = outOfScaleLayerIds.includes(layer.id);
+
+      const rawTitle = (layer.title ?? '').toLowerCase();
+      const displayLabel = rawTitle.includes('region6fireclosureline')
+        ? 'Currently closed areas'
+        : rawTitle.includes('trailnfspublish')
+          ? 'Forest Service trails'
+          : (layer.title ?? 'USFS layer');
+
+      return (
+        <LayerListItem
+          key={layer.id}
+          itemKey={layer.id}
+          label={displayLabel}
+          value={layer.id}
+          selected={isSelected}
+          disabled={isOutOfScale}
+          onSelect={handleRoadTrailSelection}
+          borderColor={layerColor}
+          iconEnd={isOutOfScale ? 'layer-hide' : undefined}
+        >
+          <LayerGraphic color={layerColor} isSelected={isSelected} />
+        </LayerListItem>
+      );
+    });
+
+  const renderRecreationItems = (): React.JSX.Element[] | null => {
+    const baseLayer = recreationSitesLayers[0];
+
+    const baseColor = getLayerColor(baseLayer);
+
+    const recreationLayerId = baseLayer.id;
+    const isOutOfScale = recreationLayerId
+      ? outOfScaleLayerIds.includes(recreationLayerId)
+      : false;
+
+    return RECREATIONITEMS.map((item) => {
+      const isSelected = activeRecreationTypes.includes(item.value);
+
+      const itemColor = baseColor;
+
+      const graphicType =
+        item.value === 'trailhead' ? 'trailhead' : 'campground';
+
+      return (
+        <LayerListItem
+          key={item.key}
+          itemKey={item.key}
+          label={item.label}
+          value={item.value}
+          selected={isSelected}
+          disabled={isOutOfScale}
+          onSelect={handleRecreationTypeSelection}
+          borderColor={itemColor}
+          iconEnd={isOutOfScale ? 'layer-hide' : undefined}
+        >
+          <LayerGraphic
+            graphicType={graphicType}
+            graphicColor={itemColor}
+            isSelected={isSelected}
+          />
+        </LayerListItem>
+      );
+    });
+  };
+
+  const renderDriveTimeItems = (): React.JSX.Element[] =>
+    driveTimeLayers.map((layer) => {
+      const layerColor = getLayerColor(layer);
+      const isSelected = activeDriveTimeLayerIds.includes(layer.id);
+      const isTwoHour = (layer.title ?? '')
+        .toLowerCase()
+        .includes('2 hours from portland');
+
+      const isOutOfScale = outOfScaleLayerIds.includes(layer.id);
+
+      return (
+        <LayerListItem
+          key={layer.id}
+          itemKey={layer.id}
+          label={layer.title ?? 'Drive time'}
+          value={layer.id}
+          selected={isSelected}
+          disabled={isOutOfScale}
+          onSelect={handleDriveTimeSelection}
+          borderColor={layerColor}
+          iconEnd={isOutOfScale ? 'layer-hide' : undefined}
+        >
+          <LayerGraphic
+            color={layerColor}
+            isSelected={isSelected}
+            extraStyles={{
+              borderColor: 'rgba(20,20,20,0.4)',
+              boxShadow:
+                isTwoHour && isSelected
+                  ? `0 0 7px 0 rgba(20,20,20,0.4)`
+                  : 'none',
+            }}
+          />
+        </LayerListItem>
+      );
+    });
+
   return (
-    <calcite-panel heading="Will I Find Morels?" className="panel-layers">
-      <calcite-notice slot="footer" open color="brand" kind="warning">
-        <div slot="message">
-          For illustration purposes only. Always follow local guidelines and
-          regulations when foraging.
-        </div>
-      </calcite-notice>
+    <calcite-panel
+      heading="Will I Find Morels?"
+      className={`content-panel layers-panel ${isSmallScreen ? 'layers-panel--small-screen' : ''}`}
+    >
+      <calcite-action
+        slot="header-actions-end"
+        icon="zoom-to-object"
+        text="Zoom to map focus area"
+        onClick={handleZoomToNorthwest}
+        id="zoom-to-action"
+      ></calcite-action>
+
+      <calcite-tooltip reference-element="zoom-to-action" placement="bottom">
+        Zoom to map focus area
+      </calcite-tooltip>
+
+      {!isSmallScreen && <DisclaimerNotice slot="footer" />}
 
       <calcite-block
-        icon-end="drive-time"
+        icon-start="flag-f"
         heading="Has it burned recently?"
-        expanded
+        expanded={!isSmallScreen}
+        collapsible={isSmallScreen}
       >
         <calcite-list
           label="Fire occurrence by year"
           selection-mode="multiple"
           selection-appearance="border"
         >
-          {fireYears.map((year, index) => {
-            const isSelected = activeFireYears.includes(year);
-            return (
-              <calcite-list-item
-                key={year}
-                label={`${year} Fire Occurrence`}
-                value={year}
-                selected={isSelected}
-                oncalciteListItemSelect={handleFireYearSelection}
-                style={{
-                  '--calcite-list-selection-border-color': `color-mix(in srgb, ${perimeterColor} calc(100% - ${(index - 1) * 20}%), transparent)`,
-                }}
-              >
-                {perimeterColor && (
-                  <div
-                    slot="content-end"
-                    style={{
-                      width: '1rem',
-                      height: '1rem',
-                      borderRadius: '999px',
-                      backgroundColor: isSelected
-                        ? perimeterColor
-                        : 'transparent',
-                      borderColor: isSelected ? 'transparent' : perimeterColor,
-                      border: '1px solid transparent',
-                      // todo - get unique feature type opacity from layer instead of doing this manually
-                      opacity: `calc(100% - ${(index - 1) * 20}%)`,
-                    }}
-                  ></div>
-                )}
-              </calcite-list-item>
-            );
-          })}
+          {renderFireYearItems()}
         </calcite-list>
       </calcite-block>
 
-      <calcite-block
-        icon-end="altitude"
-        heading="Is the elevation right?"
-        expanded
-        className="block-elevation"
-      >
-        <calcite-label>
-          <calcite-slider
-            minValue={2000}
-            maxValue={6000}
-            max={10000}
-            min={0}
-            groupSeparator
-            labelHandles
-            precise
-          ></calcite-slider>
-        </calcite-label>
-      </calcite-block>
-
       {roadAndTrailLayers.length > 0 && (
-        <calcite-block icon-end="walking" heading="Can I access it?" expanded>
+        <calcite-block
+          icon-start="walking"
+          heading="Can I access it?"
+          expanded={!isSmallScreen}
+          collapsible={isSmallScreen}
+        >
           <calcite-list
-            label="Roads and trails"
+            label="Access filters"
             selection-mode="multiple"
             selection-appearance="border"
           >
-            {roadAndTrailLayers.map((layer) => {
-              const layerColor = getLayerColor(layer);
-              const isSelected = activeRoadTrailLayerIds.includes(layer.id);
-
-              return (
-                <calcite-list-item
-                  key={layer.id}
-                  label={layer.title ?? 'USFS layer'}
-                  value={layer.id}
-                  selected={isSelected}
-                  oncalciteListItemSelect={handleRoadTrailSelection}
-                  style={{
-                    '--calcite-list-selection-border-color': layerColor,
-                  }}
-                >
-                  {layerColor && (
-                    <div
-                      slot="content-end"
-                      style={{
-                        width: '1rem',
-                        height: '1rem',
-                        borderRadius: '999px',
-                        backgroundColor: isSelected
-                          ? layerColor
-                          : 'transparent',
-                        borderColor: isSelected ? 'transparent' : layerColor,
-                        border: '1px solid transparent',
-                      }}
-                    ></div>
-                  )}
-                </calcite-list-item>
-              );
-            })}
+            {renderDriveTimeItems()}
+            {renderRecreationItems()}
+            {renderRoadAndTrailItems()}
           </calcite-list>
         </calcite-block>
       )}

@@ -17,8 +17,6 @@ type UIState = {
 };
 
 type UIActions = {
-  openFilters: () => void;
-  closeFilters: () => void;
   closePopup: () => void;
   openPopup: () => void;
   handleFeaturesSheetClose: (event: CustomEvent) => void;
@@ -32,8 +30,6 @@ export function UIProvider(props: PropsWithChildren): React.JSX.Element {
   const [isFiltersSheetOpen, setIsFiltersSheetOpen] = useState(false);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 
-  const openFilters = useCallback(() => setIsFiltersSheetOpen(true), []);
-  const closeFilters = useCallback(() => setIsFiltersSheetOpen(false), []);
   const openPopup = useCallback(() => setIsPopupOpen(true), []);
   const closePopup = useCallback(() => setIsPopupOpen(false), []);
 
@@ -59,19 +55,11 @@ export function UIProvider(props: PropsWithChildren): React.JSX.Element {
 
   const actions: UIActions = useMemo(
     () => ({
-      openFilters,
-      closeFilters,
       openPopup,
       closePopup,
       handleFeaturesSheetClose,
     }),
-    [
-      openFilters,
-      closeFilters,
-      openPopup,
-      closePopup,
-      handleFeaturesSheetClose,
-    ],
+    [openPopup, closePopup, handleFeaturesSheetClose],
   );
 
   return (

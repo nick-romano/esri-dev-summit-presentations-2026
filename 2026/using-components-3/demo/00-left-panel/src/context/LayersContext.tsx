@@ -10,11 +10,12 @@ import {
 
 import {
   filterRelevantLayers,
+  isDriveTimeLayer,
   isPerimeterLayer,
   isRecreationSitesLayer,
   isRoadLayer,
   isTrailLayer,
-} from '../utils/mapUtils';
+} from '../utils/mapUtilsUi';
 
 import type WebMap from '@arcgis/core/WebMap.js';
 import type FeatureLayer from '@arcgis/core/layers/FeatureLayer.js';
@@ -22,10 +23,14 @@ import GraphicsLayer from '@arcgis/core/layers/GraphicsLayer.js';
 
 const FIREYEARS = [2025, 2024, 2023, 2022, 2021, 2020] as const;
 
+type RecreationType = 'campground' | 'trailhead';
+
 type LayersState = {
   featureLayers: FeatureLayer[];
   activeFireYears: number[];
   activeRoadTrailLayerIds: string[];
+  activeRecreationTypes: RecreationType[];
+  activeDriveTimeLayerIds: string[];
   clickPinLayer: GraphicsLayer | null;
   selectedTrailRouteLayer: GraphicsLayer | null;
 };
@@ -35,16 +40,21 @@ type LayersAction =
       type: 'viewReadyLoadedLayers';
       featureLayers: FeatureLayer[];
       initialRoadTrailLayerIds: string[];
+      initialDriveTimeLayerIds: string[];
       clickPinLayer: GraphicsLayer;
       selectedTrailRouteLayer: GraphicsLayer;
     }
+  | { type: 'toggleDriveTimeLayer'; layerId: string }
   | { type: 'toggleFireYear'; year: number }
+  | { type: 'toggleRecreationType'; recreationType: RecreationType }
   | { type: 'toggleRoadTrailLayer'; layerId: string };
 
 const initialState: LayersState = {
   featureLayers: [],
   activeFireYears: [...FIREYEARS],
   activeRoadTrailLayerIds: [],
+  activeRecreationTypes: [],
+  activeDriveTimeLayerIds: [],
   clickPinLayer: null,
   selectedTrailRouteLayer: null,
 };
@@ -56,6 +66,7 @@ function layersReducer(state: LayersState, action: LayersAction): LayersState {
         ...state,
         featureLayers: action.featureLayers,
         activeRoadTrailLayerIds: action.initialRoadTrailLayerIds,
+        activeDriveTimeLayerIds: action.initialDriveTimeLayerIds,
         clickPinLayer: action.clickPinLayer,
         selectedTrailRouteLayer: action.selectedTrailRouteLayer,
       };
@@ -75,6 +86,22 @@ function layersReducer(state: LayersState, action: LayersAction): LayersState {
         : [...state.activeRoadTrailLayerIds, action.layerId];
       return { ...state, activeRoadTrailLayerIds: nextIds };
     }
+    case 'toggleDriveTimeLayer': {
+      const exists = state.activeDriveTimeLayerIds.includes(action.layerId);
+      const nextIds = exists
+        ? state.activeDriveTimeLayerIds.filter((id) => id !== action.layerId)
+        : [...state.activeDriveTimeLayerIds, action.layerId];
+      return { ...state, activeDriveTimeLayerIds: nextIds };
+    }
+    case 'toggleRecreationType': {
+      const exists = state.activeRecreationTypes.includes(
+        action.recreationType,
+      );
+      const nextTypes = exists
+        ? state.activeRecreationTypes.filter((t) => t !== action.recreationType)
+        : [...state.activeRecreationTypes, action.recreationType];
+      return { ...state, activeRecreationTypes: nextTypes };
+    }
     default: {
       return state;
     }
@@ -88,6 +115,7 @@ type LayersSelectors = {
   roadAndTrailLayers: FeatureLayer[];
   trailLayers: FeatureLayer[];
   recreationSitesLayers: FeatureLayer[];
+  driveTimeLayers: FeatureLayer[];
 };
 
 type LayersContextValue = LayersSelectors & LayersState;
@@ -98,6 +126,8 @@ type LayersActions = {
   ) => void;
   handleFireYearSelection: (event: CustomEvent) => void;
   handleRoadTrailSelection: (event: CustomEvent) => void;
+  handleRecreationTypeSelection: (event: CustomEvent) => void;
+  handleDriveTimeSelection: (event: CustomEvent) => void;
 };
 
 const LayersStateContext = createContext<LayersContextValue | null>(null);
@@ -134,6 +164,11 @@ export function LayersProvider(props: PropsWithChildren): React.JSX.Element {
     [state.featureLayers],
   );
 
+  const driveTimeLayers = useMemo(
+    () => state.featureLayers.filter((layer) => isDriveTimeLayer(layer)),
+    [state.featureLayers],
+  );
+
   // Keep ArcGIS layer filtering in sync (perimeter layer is one layer w/ FIREYEAR).
   useEffect(() => {
     const years = [...state.activeFireYears].sort((a, b) => a - b);
@@ -156,6 +191,35 @@ export function LayersProvider(props: PropsWithChildren): React.JSX.Element {
     });
   }, [roadAndTrailLayers, state.activeRoadTrailLayerIds]);
 
+  // Keep drive-time overlays visibility in sync.
+  useEffect(() => {
+    driveTimeLayers.forEach((layer) => {
+      layer.visible = state.activeDriveTimeLayerIds.includes(layer.id);
+    });
+  }, [driveTimeLayers, state.activeDriveTimeLayerIds]);
+
+  // Keep recreation opportunities filtered by selected activity types.
+  useEffect(() => {
+    const types = state.activeRecreationTypes;
+    const hasTypes = types.length > 0;
+
+    let where = '1 = 0';
+    if (hasTypes) {
+      const clauses: string[] = [];
+      if (types.includes('trailhead')) {
+        clauses.push("MARKERACTIVITY = 'Trailhead'");
+      }
+      if (types.includes('campground')) {
+        clauses.push("MARKERACTIVITY = 'Campground Camping'");
+      }
+      where = clauses.length > 0 ? clauses.join(' OR ') : '1 = 0';
+    }
+
+    recreationSitesLayers.forEach((layer) => {
+      layer.definitionExpression = where;
+    });
+  }, [recreationSitesLayers, state.activeRecreationTypes]);
+
   const handleViewReady = useCallback(
     (event: HTMLArcgisMapElement['arcgisViewReadyChange']): void => {
       const viewElement = event.target;
@@ -166,9 +230,7 @@ export function LayersProvider(props: PropsWithChildren): React.JSX.Element {
 
       const filteredLayers = filterRelevantLayers(layers.toArray());
 
-      const initialRoadTrailIds = filteredLayers
-        .filter((layer) => isRoadLayer(layer) || isTrailLayer(layer))
-        .map((layer) => layer.id);
+      const initialDriveTimeLayerIds: string[] = [];
 
       const clickPinLayerId = 'click-pin-layer';
       let clickPinLayer = map.findLayerById(clickPinLayerId) as
@@ -201,7 +263,8 @@ export function LayersProvider(props: PropsWithChildren): React.JSX.Element {
       dispatch({
         type: 'viewReadyLoadedLayers',
         featureLayers: filteredLayers,
-        initialRoadTrailLayerIds: initialRoadTrailIds,
+        initialRoadTrailLayerIds: [],
+        initialDriveTimeLayerIds,
         clickPinLayer,
         selectedTrailRouteLayer,
       });
@@ -247,6 +310,45 @@ export function LayersProvider(props: PropsWithChildren): React.JSX.Element {
     [state.activeRoadTrailLayerIds],
   );
 
+  const handleRecreationTypeSelection = useCallback(
+    (event: CustomEvent): void => {
+      const item = event.target as HTMLCalciteListItemElement | null;
+      if (!item) {
+        return;
+      }
+
+      const value = String(item.value ?? '').toLowerCase();
+      if (value !== 'trailhead' && value !== 'campground') {
+        return;
+      }
+
+      const recreationType = value as RecreationType;
+      const exists = state.activeRecreationTypes.includes(recreationType);
+      item.selected = !exists;
+      dispatch({ type: 'toggleRecreationType', recreationType });
+    },
+    [state.activeRecreationTypes],
+  );
+
+  const handleDriveTimeSelection = useCallback(
+    (event: CustomEvent): void => {
+      const item = event.target as HTMLCalciteListItemElement | null;
+      if (!item) {
+        return;
+      }
+
+      const id = String(item.value ?? '');
+      if (!id) {
+        return;
+      }
+
+      const exists = state.activeDriveTimeLayerIds.includes(id);
+      item.selected = !exists;
+      dispatch({ type: 'toggleDriveTimeLayer', layerId: id });
+    },
+    [state.activeDriveTimeLayerIds],
+  );
+
   const value: LayersContextValue = useMemo(
     () => ({
       ...state,
@@ -256,6 +358,7 @@ export function LayersProvider(props: PropsWithChildren): React.JSX.Element {
       roadAndTrailLayers,
       trailLayers,
       recreationSitesLayers,
+      driveTimeLayers,
     }),
     [
       state,
@@ -272,8 +375,16 @@ export function LayersProvider(props: PropsWithChildren): React.JSX.Element {
       handleViewReady,
       handleFireYearSelection,
       handleRoadTrailSelection,
+      handleRecreationTypeSelection,
+      handleDriveTimeSelection,
     }),
-    [handleViewReady, handleFireYearSelection, handleRoadTrailSelection],
+    [
+      handleViewReady,
+      handleFireYearSelection,
+      handleRoadTrailSelection,
+      handleRecreationTypeSelection,
+      handleDriveTimeSelection,
+    ],
   );
 
   return (

@@ -17,9 +17,8 @@ export function App(): React.JSX.Element {
       <calcite-navigation slot="header">
         {/* Navigation - Logo Slot  */}
         <calcite-navigation-logo
-          heading="App layout"
-          description="Navigation Logo"
-          icon="ungroup-layout-elements"
+          heading="Morel of the Story"
+          description="Potential gathering spots"
           slot="logo"
         ></calcite-navigation-logo>
       </calcite-navigation>

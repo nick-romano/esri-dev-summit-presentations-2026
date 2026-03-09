@@ -5,14 +5,96 @@
 }
 
 .layers-panel {
+  --calcite-list-background-color: transparent;
+  --calcite-block-background-color: transparent;
   --calcite-color-background: color-mix(
     in srgb,
-    var(--calcite-color-surface-1) 80%,
+    var(--calcite-color-surface-1) 70%,
     transparent
   );
   --calcite-color-foreground-1: color-mix(
     in srgb,
-    var(--calcite-color-surface-1) 80%,
+    var(--calcite-color-surface-1) 70%,
     transparent
   );
+}
+
+calcite-shell-panel {
+  --calcite-shell-panel-min-height: 60px;
+  --calcite-shell-panel-height: auto;
+}
+
+.layers-panel--small-screen {
+  width: 100%;
+  --calcite-color-foreground-1: var(--calcite-color-surface-1);
+  --calcite-color-background: var(--calcite-color-surface-1);
+}
+
+.layers-panel calcite-block {
+  margin: 0;
+  border: none;
+}
+
+.layers-panel__swatch {
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 9999px;
+  border: 1px solid;
+  background-color: var(--layer-panel-swatch-background-color);
+  border-color: var(--layer-panel-swatch-border-color);
+}
+
+.layers-panel__graphic {
+  position: relative;
+  width: 1.375rem;
+  height: 1.375rem;
+  scale: 1.5;
+  margin-top: -1.75rem;
+  padding-top: 1.375rem;
+  transform: translateY(-2px);
+}
+
+.layers-panel__graphic.graphic-selected {
+  position: relative;
+  width: 1.375rem;
+  height: 1.375rem;
+  scale: 1.5;
+  filter: drop-shadow(0 0 1.5px rgb(30 30 30 / 0.6));
+  margin-top: -1.75rem;
+  padding-top: 1.375rem;
+  transform: translateY(-2px);
+}
+
+calcite-panel[slot='footer'] calcite-notice {
+  width: calc(100% - 2rem);
+  margin: 1rem;
+}
+
+calcite-shell:not(.demo-step-4) {
+  calcite-list {
+    position: relative;
+  }
+
+  calcite-list::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 999;
+    background-color: #2a7db9;
+  }
+
+  calcite-list::after {
+    content: 'list';
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.25rem;
+    font-weight: bold;
+    pointer-events: none;
+    z-index: 9999;
+  }
 }
