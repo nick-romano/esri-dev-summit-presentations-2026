@@ -61,20 +61,13 @@ build on top of each other
 - Demo of building a map-centered app with these ideas
 
 ---
-layout: two-cols-header
----
 
 <!--Speaker: Adam-->
 
 # Shell component use cases
 
-::left::
-
 - Flexible layout container for your application
 - Provides slots to organize content and controls
-- Can be the entire app or part of an app
-
-::right::
 
 ![simple shell example](./assets/shell-simple.png)
 
@@ -86,9 +79,10 @@ layout: two-cols-header
 
 - Supports simple and complex layouts
 - Can be nested and embedded
+- Can be the entire app or part of an app
 - Pair with `arcgis-map` and `arcgis-scene`
 
-&nbsp; ![complex shell example](./assets/shell-complex.png)
+![complex shell example](./assets/shell-complex.png)
 
 ---
 layout: two-cols-header
@@ -279,7 +273,7 @@ backgroundSize: 20em 90%
 <!--Speaker: Nick-->
 
 - Map and Calcite components can build rich user experiences
-- We can use reference-element propertyies
+- We can use reference-element properties
 
 ---
 
