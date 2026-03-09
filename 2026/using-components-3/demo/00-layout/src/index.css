@@ -3,3 +3,72 @@
   --calcite-panel-shadow: var(--calcite-shadow-md);
   width: 20rem;
 }
+
+/* DEMO STEP CODE */
+calcite-shell:not(.demo-step-2) {
+  calcite-navigation,
+  calcite-navigation-logo,
+  calcite-panel {
+    position: relative;
+  }
+
+  calcite-navigation::before,
+  calcite-navigation-logo::before,
+  calcite-panel[slot='top-left']::before,
+  calcite-panel[slot='top-right']::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 999;
+  }
+
+  calcite-navigation::after,
+  calcite-navigation-logo::after,
+  calcite-panel[slot='top-left']::after,
+  calcite-panel[slot='top-right']::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.25rem;
+    font-weight: bold;
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  calcite-navigation::before {
+    background-color: #308e29;
+  }
+
+  calcite-navigation::after {
+    content: 'navigation';
+  }
+
+  calcite-navigation-logo::before {
+    background-color: #185d13;
+  }
+
+  calcite-navigation-logo::after {
+    content: 'navigation-logo';
+  }
+
+  calcite-panel[slot='top-left']::before {
+    background-color: #b97a2a;
+  }
+
+  calcite-panel[slot='top-left']::after {
+    content: 'top-left';
+  }
+
+  calcite-panel[slot='top-right']::before {
+    background-color: #2ab9b9;
+  }
+
+  calcite-panel[slot='top-right']::after {
+    content: 'top-right';
+  }
+}

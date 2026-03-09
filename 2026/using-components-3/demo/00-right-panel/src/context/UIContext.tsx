@@ -28,7 +28,7 @@ const UIStateContext = createContext<UIState | null>(null);
 const UIActionsContext = createContext<UIActions | null>(null);
 
 export function UIProvider(props: PropsWithChildren): React.JSX.Element {
-  const isSmallScreen = useIsBelowScreenSize(680);
+  const isSmallScreen = useIsBelowScreenSize(700);
   const [isFiltersSheetOpen, setIsFiltersSheetOpen] = useState(false);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 

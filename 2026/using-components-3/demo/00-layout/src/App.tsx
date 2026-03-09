@@ -1,16 +1,21 @@
 import '@arcgis/map-components/components/arcgis-map';
-import '@arcgis/map-components/components/arcgis-zoom';
 import '@esri/calcite-components/components/calcite-navigation';
 import '@esri/calcite-components/components/calcite-navigation-logo';
 import '@esri/calcite-components/components/calcite-panel';
 import '@esri/calcite-components/components/calcite-shell';
+import { useState } from 'react';
 
 const mapItemId = '20398bf380294ec49cea316c51ea8fc4';
 
 export function App(): React.JSX.Element {
+  /* Demo toggle */
+  const [demoStep] = useState<1 | 2>(1);
+
   return (
-    <calcite-shell content-behind>
+    <calcite-shell className={`demo-step-${demoStep}`}>
+      {/* Shell - Header Slot  */}
       <calcite-navigation slot="header">
+        {/* Navigation - Logo Slot  */}
         <calcite-navigation-logo
           heading="App layout"
           description="Navigation Logo"
@@ -18,8 +23,12 @@ export function App(): React.JSX.Element {
           slot="logo"
         ></calcite-navigation-logo>
       </calcite-navigation>
+
+      {/* Shell - Default Content Slot  */}
       <arcgis-map id="morel-map" itemId={mapItemId} ground="world-elevation">
+        {/* Map Top Left Slot  */}
         <calcite-panel
+          collapsible
           heading="Top Left Slot"
           icon="dock-left"
           className="content-panel"
@@ -39,7 +48,9 @@ export function App(): React.JSX.Element {
           </ul>
         </calcite-panel>
 
+        {/* Map Top Right Slot  */}
         <calcite-panel
+          collapsible
           heading="Top Right Slot"
           icon="dock-right"
           className="content-panel"
@@ -56,7 +67,6 @@ export function App(): React.JSX.Element {
             <li>Trail access</li>
           </ul>
         </calcite-panel>
-        <arcgis-zoom slot="bottom-right" />
       </arcgis-map>
     </calcite-shell>
   );

@@ -2,7 +2,6 @@
 import '@arcgis/map-components/components/arcgis-map';
 import '@arcgis/map-components/components/arcgis-elevation-profile';
 import '@arcgis/map-components/components/arcgis-features';
-import '@arcgis/map-components/components/arcgis-zoom';
 import '@esri/calcite-components/components/calcite-shell';
 import '@esri/calcite-components/components/calcite-navigation';
 import '@esri/calcite-components/components/calcite-navigation-logo';
@@ -59,7 +58,6 @@ export function App(): React.JSX.Element {
             <LayersPanel />
           </div>
         )}
-        <arcgis-zoom slot="bottom-right" />
 
         <div slot="top-right">
           <MorelPanel />
