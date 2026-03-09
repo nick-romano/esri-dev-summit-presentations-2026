@@ -233,10 +233,10 @@ backgroundSize: 20em 90%
 # Demo step: layout placeholders
 
 - Demo folder: `demo/00-layout`
-- Header slot (navbar): app title + branding area
-- Map `top-left` slot: placeholder UI for quickly toggling layers on/off
-- Map `top-right` slot: placeholder UI for nearby trails, elevation, and access
-  info
+- Shell `header` slot: Calcite Navigation + Logo
+- Shell default slot: `arcgis-map` component
+- Map `top-left` slot: Calcite Panel placeholder
+- Map `top-right` slot: Calcite Panel placeholder
 
 ---
 
@@ -245,16 +245,16 @@ backgroundSize: 20em 90%
 - Touch points: start building out the left panel with real calcite components. Touch on the different components used. Use List Item slots and List configuration for a unique interactive legend display.
 -->
 
-# Demo step: rich left panel (Calcite)
+# Demo step: interactive left panel
 
 - Demo folder: `demo/00-left-panel`
-
-- Calcite panel
-  https://developers.arcgis.com/calcite-design-system/components/panel/
-- Calcite block
-  https://developers.arcgis.com/calcite-design-system/components/block/
-- Calcite list
-  https://developers.arcgis.com/calcite-design-system/components/list/
+- Build an interactive legend
+- Adapt layout for smaller viewport sizes
+- Use slots to arrange content and controls
+- Use events to respond to user interaction
+- [Calcite docs - Panel](https://developers.arcgis.com/calcite-design-system/components/panel/)
+- [Calcite docs - Block](https://developers.arcgis.com/calcite-design-system/components/block/)
+- [Calcite docs - List](https://developers.arcgis.com/calcite-design-system/components/list/)
 
 ---
 
