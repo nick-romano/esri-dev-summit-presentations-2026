@@ -52,9 +52,9 @@ type LayersAction =
 const initialState: LayersState = {
   featureLayers: [],
   activeFireYears: [...FIREYEARS],
-  activeRoadTrailLayerIds: [],
-  activeRecreationTypes: [],
-  activeDriveTimeLayerIds: [],
+  activeRoadTrailLayerIds: ['19cb5c3f479-layer-93', '19cc5c07497-layer-17'],
+  activeRecreationTypes: ['trailhead', 'campground'],
+  activeDriveTimeLayerIds: ['19cca81f661-layer-19'],
   clickPinLayer: null,
   selectedTrailRouteLayer: null,
 };
@@ -135,6 +135,7 @@ const LayersActionsContext = createContext<LayersActions | null>(null);
 
 export function LayersProvider(props: PropsWithChildren): React.JSX.Element {
   const [state, dispatch] = useReducer(layersReducer, initialState);
+  console.log(state);
 
   const perimeterLayers = useMemo(
     () => state.featureLayers.filter((layer) => isPerimeterLayer(layer)),
@@ -263,8 +264,8 @@ export function LayersProvider(props: PropsWithChildren): React.JSX.Element {
       dispatch({
         type: 'viewReadyLoadedLayers',
         featureLayers: filteredLayers,
-        initialRoadTrailLayerIds: [],
-        initialDriveTimeLayerIds,
+        initialRoadTrailLayerIds: initialState.activeRoadTrailLayerIds,
+        initialDriveTimeLayerIds: initialState.activeDriveTimeLayerIds,
         clickPinLayer,
         selectedTrailRouteLayer,
       });

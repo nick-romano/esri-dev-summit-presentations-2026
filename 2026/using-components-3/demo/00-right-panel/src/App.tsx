@@ -16,7 +16,19 @@ import { useResultsActions } from './context/ResultsContext';
 import { useUIActions, useUIState } from './context/UIContext';
 import { DisclaimerNotice } from './components/DisclaimerNotice';
 
+import Point from '@arcgis/core/geometry/Point.js';
+
 const mapItemId = 'ecaf67baea484e99b1b499131ae8e179';
+
+const center = new Point({
+  spatialReference: {
+    latestWkid: 3857,
+    wkid: 102100,
+  },
+  x: -13620596.819267701,
+  y: 5704724.104616036,
+});
+
 export function App(): React.JSX.Element {
   const { handleViewReady } = useLayersActions();
   const { handleMapClick, registerElevationProfileElement } =
@@ -39,6 +51,8 @@ export function App(): React.JSX.Element {
         onarcgisViewReadyChange={handleViewReady}
         onarcgisViewClick={handleMapClick}
         ground="world-elevation"
+        center={center}
+        zoom={9}
       >
         {!isSmallScreen && (
           <div slot="top-left" className="layout-slot">

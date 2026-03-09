@@ -140,18 +140,24 @@ layout: two-cols-header
 - https://developers.arcgis.com/javascript/latest/references/map-components/components/arcgis-map/#slots
 
 ---
+layout: image-right
+image: ./assets/calcite-tooltip-reference-element.gif
+backgroundSize: 65%
+---
 
 <!--Speaker: Nick-->
 
 # Reference Element
 
-- Both calcite-components and map-components expose reference-element properties
+- Both Calcite and Map Components expose reference-element properties
 - They serve slightly differing purposes:
-  - In calcite components - they are used to position overlays like tooltips and
-    popovers relative to a reference element
-  - In map components - they are used to link a UI component to a map or scene
-    component.
-  - We'll show examples of both in our demo
+  - <b>Calcite</b> - position an element relative to another element (e.g.
+    tooltip to button)
+  - <b>Map Components</b> - link a UI element to a specific location on the map
+
+<!--
+![reference element example](./assets/calcite-tooltip-reference-element.gif)
+-->
 
 ---
 layout: statement
@@ -271,8 +277,21 @@ backgroundSize: 20em 90%
 
 <!--Speaker: Nick-->
 
-- Map and Calcite components can build rich user experiences
-- We can use reference-element properties
+- Great, map-centric apps are built with a combination of cartography, data, and
+  user experience
+- Web components are a powerful tool to build unique user experiences that help
+  craft a story around your data and map
+
+<img class="recap-image" src="./assets/app-final.jpg" alt="morel of the story" />
+
+<style>
+.recap-image {
+  display: block;
+  width: 70%;
+  margin-top: 0.75rem;
+  justify-self: center;
+}
+</style>
 
 ---
 
@@ -299,12 +318,11 @@ layout: center
 
 # Questions?
 
-ArcGIS Maps SDK for JavaScript: App Development with Components, Part 3: Using
-Frameworks
+ArcGIS Maps SDK for JavaScript: App Development with Components, Part 3: User
+Experience
 
-Demos and additional resources available at: TODO: Link
-
-TODO: QR code
+Demos and additional resources available at:
+https://github.com/nick-romano/esri-dev-summit-presentations-2026/tree/main/2026/using-components-3
 
 <!--
 If you wish to dive deeper, you can find our demos and
