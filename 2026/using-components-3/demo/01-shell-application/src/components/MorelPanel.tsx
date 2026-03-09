@@ -10,6 +10,8 @@ function clamp(value: number, min: number, max: number): number {
 
 export function MorelPanel(): React.JSX.Element {
   const {
+    elevationDetail,
+    elevationScore,
     elevationValue,
     burnStatusLabel,
     burnStatusValue,
@@ -53,12 +55,11 @@ export function MorelPanel(): React.JSX.Element {
         }}
       />
       <MorelTile
-        className="danger"
         icon="altitude"
         description={
-          elevationValue !== null
-            ? 'Elevation at clicked location.'
-            : 'Click the map to see elevation.'
+          elevationValue
+            ? elevationDetail
+            : 'Click on the map to get elevation details.'
         }
         heading="Elevation"
         blurb={
@@ -69,9 +70,8 @@ export function MorelPanel(): React.JSX.Element {
         meter={{
           label: 'Elevation',
           min: 0,
-          max: 4000,
-          value:
-            elevationValue !== null ? clamp(elevationValue, 0, 4000) : null,
+          max: 100,
+          value: elevationValue !== null ? elevationScore : null,
         }}
       />
       <MorelTile

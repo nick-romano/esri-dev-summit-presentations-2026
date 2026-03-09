@@ -53,6 +53,7 @@ export function App(): React.JSX.Element {
         ground="world-elevation"
         center={center}
         zoom={9}
+        popupDisabled
       >
         {!isSmallScreen && (
           <div slot="top-left" className="layout-slot">

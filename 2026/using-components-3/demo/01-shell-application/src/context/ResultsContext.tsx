@@ -25,6 +25,8 @@ type ResultsState = {
   burnStatusValue: number;
   burnStatusLabel: string;
   burnDetail: string;
+  elevationDetail: string;
+  elevationScore: number;
   elevationValue: number | null;
   accessLabel: string;
   accessDetail: string;
@@ -53,6 +55,8 @@ type ResultsAction =
 const initialState: ResultsState = {
   burnStatusValue: 0,
   burnStatusLabel: 'Tap map',
+  elevationDetail: 'Click the map to see how favorable the elevation is.',
+  elevationScore: 0,
   elevationValue: null,
   burnDetail: 'Click the map to see burn history.',
   accessLabel: 'Tap map',
@@ -81,6 +85,49 @@ function getAccessValueFromMiles(alongTrailMiles: number | null): number {
   return Math.min(100, Math.max(0, Math.round(value)));
 }
 
+function getElevationScoreFromFeet(elevationFeet: number | null): number {
+  if (elevationFeet === null || !Number.isFinite(elevationFeet)) {
+    return 0;
+  }
+
+  const preferredMinFeet = 2_500;
+  const preferredMaxFeet = 6_000;
+  if (elevationFeet >= preferredMinFeet && elevationFeet <= preferredMaxFeet) {
+    return 100;
+  }
+
+  const distanceFromPreferredBand =
+    elevationFeet < preferredMinFeet
+      ? preferredMinFeet - elevationFeet
+      : elevationFeet - preferredMaxFeet;
+
+  // Smooth Gaussian-style falloff outside the preferred band.
+  const falloffFeet = 1_300;
+  const score = 100 * 0.5 ** ((distanceFromPreferredBand / falloffFeet) ** 2);
+  return Math.max(0, Math.min(100, Math.round(score)));
+}
+
+function getElevationDetail(
+  elevationFeet: number | null,
+  elevationScore: number,
+): string {
+  if (elevationFeet === null || !Number.isFinite(elevationFeet)) {
+    return 'Click the map to see how favorable the elevation is.';
+  }
+
+  if (elevationScore === 100) {
+    return 'This elevation is in the ideal 2500-6000 ft range, great for morels!';
+  }
+
+  if (elevationFeet < 2_500) {
+    return 'This spot is below the ideal 2500-6000 ft range, but could still produce some morels.';
+  }
+  if (elevationFeet > 6_000) {
+    return 'This spot is above the ideal 2500-6000 ft range, which may be too high for morels, but you might get lucky!';
+  }
+  return 'This elevation is a bit outside the ideal 2500-6000 ft range, so it may be less favorable for morels.';
+}
+
 function resultsReducer(
   state: ResultsState,
   action: ResultsAction,
@@ -96,7 +143,15 @@ function resultsReducer(
         burnDetail: action.detail,
       };
     case 'setElevationValue':
-      return { ...state, elevationValue: action.value };
+      return {
+        ...state,
+        elevationValue: action.value,
+        elevationScore: getElevationScoreFromFeet(action.value),
+        elevationDetail: getElevationDetail(
+          action.value,
+          getElevationScoreFromFeet(action.value),
+        ),
+      };
     case 'setAccessStatus':
       return {
         ...state,

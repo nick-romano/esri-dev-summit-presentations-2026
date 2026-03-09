@@ -95,7 +95,7 @@ calcite-tile {
   border-block-start: 1px solid var(--calcite-color-border-2);
 }
 
-.big-number {
+.metric {
   font-size: 1rem;
   font-weight: bold;
 }

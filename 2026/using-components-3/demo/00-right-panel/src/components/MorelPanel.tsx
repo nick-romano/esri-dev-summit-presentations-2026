@@ -4,12 +4,10 @@ import { useResultsActions, useResultsState } from '../context/ResultsContext';
 import { MorelTile } from './MorelTile';
 import type { MorelTileProps } from './MorelTile';
 
-function clamp(value: number, min: number, max: number): number {
-  return Math.min(Math.max(value, min), max);
-}
-
 export function MorelPanel(): React.JSX.Element {
   const {
+    elevationDetail,
+    elevationScore,
     elevationValue,
     burnStatusLabel,
     burnStatusValue,
@@ -29,13 +27,13 @@ export function MorelPanel(): React.JSX.Element {
       selection-mode="none"
       scale="s"
     >
-      <calcite-tile
+      {/* <calcite-tile
         icon="drive-time"
-        description="Click a potential morel foraging spot to see details about recent wildfires in the area."
+        description="This location was burned in 2024, which may be good for morel growth depending on other factors like burn severity and access."
         heading="Burn recency"
       >
-        <div className="big-number" slot="content-top">
-          Recent Wildfire?
+        <div className="metric" slot="content-top">
+          Burned in 2024
         </div>
         <calcite-meter
           scale="s"
@@ -43,9 +41,9 @@ export function MorelPanel(): React.JSX.Element {
           label={'Score'}
           min={0}
           max={100}
-          value={60}
-        ></calcite-meter>
-      </calcite-tile>
+          value={80}
+        ></calcite-meter>    
+      </calcite-tile> */}
 
       {/* <MorelTile 
         icon="pin"
@@ -71,13 +69,8 @@ export function MorelPanel(): React.JSX.Element {
         }}
       /> */}
       {/* <MorelTile
-        className="danger"
         icon="altitude"
-        description={
-          elevationValue !== null
-            ? 'Elevation at clicked location.'
-            : 'Click the map to see elevation.'
-        }
+        description={elevationValue ? elevationDetail : "Click on the map to get elevation details."}
         heading="Elevation"
         blurb={
           elevationValue !== null
@@ -87,11 +80,8 @@ export function MorelPanel(): React.JSX.Element {
         meter={{
           label: 'Elevation',
           min: 0,
-          max: 4000,
-          value:
-            elevationValue !== null
-              ? clamp(elevationValue, 0, 4000)
-              : null,
+          max: 100,
+          value: elevationValue !== null ? elevationScore : null,
         }}
       /> */}
       {/* <MorelTile

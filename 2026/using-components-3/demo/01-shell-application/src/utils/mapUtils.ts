@@ -104,19 +104,19 @@ export async function getBurnStatusAtPoint(
   if (mostRecentYear >= 2024) {
     detailText = `${mostRecentYear} burn — extremely recent, peak morel potential.`;
   } else if (mostRecentYear === 2023) {
-    score = 95;
-    detailText = `${mostRecentYear} burn — very recent, excellent morel potential.`;
-  } else if (mostRecentYear === 2022) {
-    score = 90;
-    detailText = `${mostRecentYear} burn — very recent, excellent morel potential.`;
-  } else if (mostRecentYear === 2021) {
-    score = 85;
-    detailText = `${mostRecentYear} burn — recent, very good morel potential.`;
-  } else if (mostRecentYear === 2020) {
     score = 80;
-    detailText = `${mostRecentYear} burn — recent, good morel potential.`;
+    detailText = `${mostRecentYear} burn — recent, great morel potential.`;
+  } else if (mostRecentYear === 2022) {
+    score = 60;
+    detailText = `${mostRecentYear} burn — the forest is recovering, good morel potential. but access could be difficult due to new growth.`;
+  } else if (mostRecentYear === 2021) {
+    score = 40;
+    detailText = `${mostRecentYear} burn — recent, new growth may make visibility and access difficult.`;
+  } else if (mostRecentYear === 2020) {
+    score = 20;
+    detailText = `${mostRecentYear} burn — recent, new growth may make visibility and access difficult.`;
   } else {
-    score = 30;
+    score = 10;
     detailText = 'Older burn — low morel potential.';
   }
 

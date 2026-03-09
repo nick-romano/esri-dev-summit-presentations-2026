@@ -111,7 +111,7 @@ calcite-tile {
   --calcite-panel-shadow: var(--calcite-shadow-md);
 }
 
-.big-number {
+.metric {
   font-size: 1rem;
   font-weight: bold;
 }

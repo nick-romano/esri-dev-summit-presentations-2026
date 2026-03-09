@@ -48,14 +48,14 @@ export function MorelTile({
       heading={heading}
     >
       {blurb != null ? (
-        <div className="big-number" slot="content-top">
+        <div className="metric" slot="content-top">
           {blurb}
         </div>
       ) : null}
 
       {meter ? (
         meter.value == null ? (
-          <div className="big-number" slot="content-top">
+          <div className="metric" slot="content-top">
             {meter.placeholder ?? '—'}
           </div>
         ) : (
