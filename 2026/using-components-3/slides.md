@@ -116,11 +116,10 @@ layout: two-cols-header
 
 ::left::
 
-- `panel-start`, `panel-end`, `panel-top`, and `panel-bottom` slots organize
-  content
+- `panel-start`, `panel-end`, `panel-top`, and `panel-bottom`, `header` and
+  `footer` slots organize content
 - Use with Shell Panels, Panels, and Blocks to organize content and controls
-- Default slot for `arcgis-map` and `arcgis-scene`
-- Additional `header` and `footer` slots
+- Default slot for `arcgis-map`, `arcgis-scene`, or other content
 
 - [Calcite docs - layout + shell slots](https://developers.arcgis.com/calcite-design-system/foundations/layouts/#shell-slots)
 - [Calcite docs - sample code](https://developers.arcgis.com/calcite-design-system/sample-code)
