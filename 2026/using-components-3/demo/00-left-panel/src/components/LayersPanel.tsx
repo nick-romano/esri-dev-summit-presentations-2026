@@ -190,8 +190,6 @@ export function LayersPanel(): React.JSX.Element {
   const renderRecreationItems = (): React.JSX.Element[] | null => {
     const baseLayer = recreationSitesLayers[0];
 
-    const baseColor = getLayerColor(baseLayer);
-
     const recreationLayerId = baseLayer.id;
     const isOutOfScale = recreationLayerId
       ? outOfScaleLayerIds.includes(recreationLayerId)
