@@ -61,26 +61,39 @@ build on top of each other
 - Demo of building a map-centered app with these ideas
 
 ---
-
-<!--Speaker: Adam-->
-
-# Shell component use cases
-
-- Flexible layout container for your application
-- Provides slots to organize content and controls
-
-![simple shell example](./assets/shell-simple.png)
-
+layout: two-cols-header
 ---
 
 <!--Speaker: Adam-->
 
-# Shell component use cases
+# Shell component
+
+::left::
+
+- `calcite-shell`
+- Flexible layout container for your application
+- Provides slots to organize content and controls
+
+::right::
+
+![simple shell example](./assets/shell-simple.png)
+
+---
+layout: two-cols-header
+---
+
+<!--Speaker: Adam-->
+
+# Shell component
+
+::left::
 
 - Supports simple and complex layouts
 - Can be nested and embedded
 - Can be the entire app or part of an app
 - Pair with `arcgis-map` and `arcgis-scene`
+
+::right::
 
 ![complex shell example](./assets/shell-complex.png)
 
@@ -104,7 +117,17 @@ layout: two-cols-header
 
 ![dialog slots example](./assets/slots-dialog.png)
 
-![dialog slots example](./assets/slots-notice.png)
+![notice slots example](./assets/slots-notice.png)
+
+<style>
+  img[alt="notice slots example"] {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    -webkit-mask-image: linear-gradient(to top, transparent 70%, white 75%);
+    mask-image: linear-gradient(to top, transparent 70%, white 75%);
+  }
+</style>
 
 ---
 layout: two-cols-header
