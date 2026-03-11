@@ -16,7 +16,7 @@ Presenters: [Hugo Campos](https://bsky.app/profile/hugocampos.bsky.social) &
 
 Presented at [Esri Developer Summit 2026](https://devtechsummit2026.esri.com/).
 
-[![ArcGIS Maps SDK for JavaScript: Fast Development and Build Tooling header slide](./assets/header-slide.webp)](https://maxpatiiuk.github.io/esri-dev-summit-presentations/2026/build-tooling)
+[![ArcGIS Maps SDK for JavaScript: Fast Development and Build Tooling header slide](./assets/header-slide.avif)](https://maxpatiiuk.github.io/esri-dev-summit-presentations/2026/build-tooling)
 
 [Slides](https://maxpatiiuk.github.io/esri-dev-summit-presentations/2026/build-tooling)
 
@@ -53,7 +53,7 @@ Presented at [Esri Developer Summit 2026](https://devtechsummit2026.esri.com/).
 - [Documentation](https://developers.arcgis.com/javascript)
 - [Get started (for NPM)](https://developers.arcgis.com/javascript/latest/get-started/#npm)
 - [Maps SDK Resources](https://github.com/Esri/jsapi-resources)
-- [React sample app](https://github.com/Esri/jsapi-resources/tree/main/component-samples/map-and-charts-components-react)
+- [React sample app](https://github.com/Esri/jsapi-resources/tree/main/templates/js-maps-sdk-react)
 
 ### TypeScript 🦾
 

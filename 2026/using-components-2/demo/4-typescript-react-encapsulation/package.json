@@ -1,5 +1,5 @@
 {
-  "name": "map-components-react-typescript-minimap-sample",
+  "name": "map-components-react--typescript-sample",
   "private": true,
   "type": "module",
   "scripts": {
@@ -15,10 +15,10 @@
     "react-dom": "^19.2.4"
   },
   "devDependencies": {
-    "vite": "^7.3.1",
-    "@vitejs/plugin-react": "^5.1.4",
-    "typescript": "5.9.3",
     "@types/react": "^19.2.14",
-    "@types/react-dom": "^19.2.3"
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react-swc": "^4.2.3",
+    "typescript": "5.9.3",
+    "vite": "^7.3.1"
   }
 }

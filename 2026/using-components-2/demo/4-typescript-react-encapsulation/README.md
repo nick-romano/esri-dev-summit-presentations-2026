@@ -1,11 +1,10 @@
-# Vite + React + TypeScript demo with a minimap component
+# Vite + React + TypeScript encapsulation demo
 
 [Session Description](../..)
 
 ## Key changes from [3-typescript](../3-typescript/)
 
-- Add a minimap component
-- Show the minimap when a elevation profile is displayed
+- Refactored the elevation profile panel into a separate component
 
 ## Technologies used:
 
@@ -23,7 +22,7 @@
 
    ```sh
    git clone https://github.com/maxpatiiuk/esri-dev-summit-presentations esri-dev-summit-presentations
-   cd esri-dev-summit-presentations/2026/using-components-2/demo/4-typescript-add-minimap
+   cd esri-dev-summit-presentations/2026/using-components-2/demo/4-typescript-react-encapsulation
    ```
 
 2. Install dependencies

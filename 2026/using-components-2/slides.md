@@ -45,45 +45,95 @@ build on top of each other
 
 ---
 
-# Calcite Design System 💎
+# Calcite Design System
 
-- An extensive library of reusable web components for designing compelling apps
-- Provides consistent, customizable, responsive and accessible UI out of the box
-- Works with any framework
+- Platform-agnostic design system by Esri
+  - Design guidelines including accessibility, iconography, theming, and
+    typography
+  - Ensures a consistent, compelling, and cohesive user experience across
+    products
+- Includes **Calcite components**, an extensive library of reusable web
+  components
+  - Framework-agnostic, W3C standards-based, and customizable
+  - Responsive and follows WCAG for accessibility
 - Will be covered in more detail by the 3rd session in this 4-part series
 
+![Calcite components](./assets/calcite.png){ width=250 }
+
 ---
+layout: iframe
 
-# ArcGIS Maps SDK for JavaScript 📍
-
-- A comprehensive and powerful WebGIS mapping library
-- Now simpler to use thanks to web components
-- Core JavaScript API
-  - Provides the main functionality. Contains the classes, methods, properties,
-    events and type definitions for all the layers, components, visualization
-    and client-side analysis functionality.
-- JavaScript Maps SDK Components
-  - Standards-based web components designed to encapsulate complex functionality
-    (core API) and styling (Calcite) into small HTML markup chunks (i.e., UI)
-- Documentation
-  - Get started, programming patterns, tutorials, samples and API / component
-    references
+url: https://developers.arcgis.com/calcite-design-system/
+---
 
 ---
 
-# Prebuilt versus building the SDK and Calcite
+# ArcGIS Maps SDK for JavaScript
 
-- Script tag applications are quick to get started
-  - No build step - the SDK and Calcite are prebuilt for you via the ArcGIS CDN
-  - Only need a single HTML file
+- A comprehensive and powerful Web GIS mapping library
+- Allows developers to build apps where people create, analyze, collaborate on,
+  and share maps
+- Three main parts of the SDK:
+  - **Core API** - The main functionality for maps, layers, data visualization,
+    and client-side analysis through its classes, methods, properties, events,
+    and type definitions.
+  - **Components** - Web components designed to encapsulate complex
+    functionality and styling into small chunks of HTML markup (i.e.,
+    declarative UI).
+  - **Documentation** - Includes docs for getting started, programming patterns,
+    tutorials, application templates, sample code, and references.
+
+---
+
+# How to get the SDK into your app
+
+- Include the ArcGIS CDN in script tag applications for prototyping and getting
+  started quickly
+  - Single HTML file with no build step
+    - Prebuilt versions of the SDK and Calcite are hosted on the ArcGIS CDN
   - Syntax for including modules:
-    - `require(["esri/WebMap"], (WebMap) => { /* code goes here */ });`
-- Building an application that scales is more involved
-  - Work with a bundler (Vite, Parcel, Webpack)
-  - Use a framework (React, Angular, Vue)
-    - Routing and state management
+    - `const WebMap = await $arcgis.import("@arcgis/core/WebMap.js");`
+- Add the SDK as a dependency when building applications that scale
+  - JavaScript runtime environment and package manager required
+  - Work with a bundler (Vite, Parcel, Webpack) and framework (React, Angular,
+    Vue)
   - Syntax for including modules:
-    - `import { WebMap } from "@arcgis/core/WebMap";`
+    - `import WebMap from "@arcgis/core/WebMap.js";`
+
+---
+layout: iframe-right
+url: https://developers.arcgis.com/javascript/latest/system-requirements/
+---
+
+# What you need to install and run the SDK
+
+- An up-to-date browser
+- A JavaScript runtime environment
+  - Node.js
+- And a package manager
+  - NPM (comes with Node.js)
+- For more information, see the SDK's
+  [system requirements](https://developers.arcgis.com/javascript/latest/system-requirements/)
+  documentation
+
+---
+
+# Scaffold a new app using a single command
+
+- Reminder - We’ll be building on the app from session Part 1 as a starting
+  point
+- But, you can create a new app using a single command:
+  - Run `npm init @arcgis` in your terminal and follow the prompts,
+  - or skip the prompts by using `npx @arcgis/create -n my-arcgis-app -t vite`
+  - This CLI tool uses
+    [git-sparse-checkout](https://git-scm.com/docs/git-sparse-checkout) to fetch
+    app templates from the
+    [Esri/jsapi-resources](https://github.com/Esri/jsapi-resources) repository
+
+---
+layout: iframe
+url: https://developers.arcgis.com/javascript/latest/get-started/
+---
 
 ---
 
@@ -111,10 +161,10 @@ that is most performant for the browser to run.
 graph LR
   subgraph human_files["Human-readable files"]
     direction LR
-    TS[TypeScript .ts/.tsx]
-    JS[JavaScript .js/.jsx]
+    JS[JavaScript .js/.ts]
     CSS[CSS/Sass .css/.scss]
     IMG[Assets .jpg/.json]
+    NPM[NPM dependencies]
   end
 
   Bundler("Bundler")
@@ -133,23 +183,24 @@ graph LR
 
 # Bundler benefits
 
-- Improve development experience (live updates...)
-- Enable modern syntax features and dependencies
-- Make testing code simpler
-- Optimize performance (reduce file sizes, split bundles...)
-- Allow extending capabilities with plugins
+1. Optimize performance (reduce file sizes, split bundles...)
+2. Improve development experience (live updates...)
+3. Permits consumption of NPM packages
+4. Make testing code simpler
+
+Bonus: can extend the bundlers using plugins
 
 ---
 
 # Examples of bundlers
 
-- Vite ⚡
+- Parcel
+- Webpack
+- Vite
   - Most popular bundler today
   - Used by many Esri teams
   - Great developer experience
   - Large and rapidly growing community
-- Parcel
-- Webpack
 
 ---
 layout: center
@@ -163,6 +214,7 @@ layout: center
 - Start the dev server and show how simple it is to use
 - Show index.html, main.js
 - Show live update
+- Ctrl + Cmd + Space for emoji picker
 -->
 
 ---
@@ -189,7 +241,7 @@ package.json:
   },
   // Only used during development/build
   "devDependencies": {
-    "vite": "^7.3.1"
+    "vite": "^7.3.1",
     "typescript": "5.9.3",
     "@vitejs/plugin-react": "^4.2.3",
     "@types/react": "^19.2.14",
@@ -201,7 +253,9 @@ package.json:
 
 # Semantic versioning
 
-`<major>.<minor>.<patch>` (example: `5.0.0`)
+Example: 3.0.3 => 5.0.2
+
+`<major>.<minor>.<patch>`
 
 - **major**: breaking changes - read the release notes
 - **minor**: new features - safe to update
@@ -209,15 +263,11 @@ package.json:
 
 ---
 
-# Semantic versioning ranges
+# Semantic versioning
 
-Rather than specifying an exact version, you can let NPM decide which version to
-install:
+As of 5.0.0, `@arcgis/*` packages follow semantic versioning.
 
-- `^5.0.0` - any version from 5.0.0 to 6.0.0 (features and bug fixes)
-- `~5.0.0` - any version from 5.0.0 to 5.1.0 (only bug fixes)
-
-Allows for dependency sharing (multiple packages can use single Calcite)
+Tools like `npm install` and Dependabot assume semantic versioning by default.
 
 ---
 
@@ -233,8 +283,20 @@ Allows for dependency sharing (multiple packages can use single Calcite)
 - The output is index.html and static files - same as no-build-step apps
   - Show off single minified JavaScript file
 - Can be deployed to any hosting provider (GitHub Pages, Vercel) or local server (NGINX, Microsoft IIS, Apache)
-- Mention assets can be made fully self-hosted
+- Preview using `npm run preview`
 -->
+
+---
+
+# Asset handling
+
+- By default, `dist/` does not include component images and translation files
+- Instead, they are loaded from Esri's CDN (fast server in the cloud)
+- They can be made
+  [fully self-hosted](https://developers.arcgis.com/javascript/latest/working-with-assets/)
+  if needed
+
+![Even in a self-hosted app some requests come from js.arcgis.com](./assets/cdn-network.avif)
 
 ---
 
@@ -243,16 +305,6 @@ Allows for dependency sharing (multiple packages can use single Calcite)
 These slides are built with Vite and hosted on GitHub Pages! ✨
 
 (with help from [Slidev](https://sli.dev/))
-
----
-
-# Asset handling
-
-- By default, component assets are loaded from Esri's fast CDN
-- This includes translation files and images
-- They can be made
-  [fully self-hosted](https://developers.arcgis.com/javascript/latest/working-with-assets/)
-  if needed
 
 ---
 layout: intro
@@ -279,7 +331,44 @@ layout: intro
 - Declarative rendering and events
   - JSX syntax, which is a mix of JavaScript and HTML
 - Easy state management with "hooks"
-- React19 has support for web components out of the box
+- Components re-render when state changes, so no need for query selectors or
+  manual DOM manipulation
+- React 19 has support for web components out of the box
+
+---
+layout: full
+---
+
+```mermaid
+%%{init: {'themeCSS': '.edgeLabel, .edgeLabel span, .edgeLabel p { color: #000 !important; fill: #000 !important; }'}}%%
+graph TD
+  classDef state fill:#15324a,stroke:#7fd1b9,color:#fff,stroke-width:3px
+  classDef component fill:#1f4b6e,stroke:#9ad1ff,color:#fff,stroke-width:2px
+  classDef view fill:#355f2e,stroke:#b7d77a,color:#fff,stroke-width:2px
+
+  App["<b>App</b><br/>owns state: { user, filters }"]:::state
+  Sidebar["<b>Sidebar</b>"]:::component
+  Main["<b>Main content</b>"]:::component
+  Toolbar["<b>Toolbar</b>"]:::component
+  Login["<b>Login</b><br/>rendered when user is empty"]:::view
+  Profile["<b>Profile</b><br/>rendered when user exists"]:::view
+  Map["<b>Map / chart / UI</b>"]:::component
+
+  App --> Sidebar
+  App --> Main
+  App --> Toolbar
+  Toolbar -->|user state is empty| Login
+  Toolbar -->|user state exists| Profile
+  Main --> Map
+```
+
+---
+layout: center
+---
+
+<video width="640" height="480" controls>
+    <source src="./assets/react-tree.webm" type="video/webm">
+</video>
 
 ---
 layout: center
@@ -317,7 +406,32 @@ Script:
 
 ---
 
-# Summary of benefits from react
+# React in this app
+
+```mermaid
+%%{init: {'themeCSS': '.edgeLabel, .edgeLabel span, .edgeLabel p { color: #000 !important; fill: #000 !important; }'}}%%
+graph TD
+  classDef root fill:#15324a,stroke:#7fd1b9,color:#fff,stroke-width:3px
+  classDef react fill:#1f4b6e,stroke:#9ad1ff,color:#fff,stroke-width:2px
+  classDef calcite fill:#355f2e,stroke:#b7d77a,color:#fff,stroke-width:2px
+  classDef maps fill:#5b3a1f,stroke:#ffb36b,color:#fff,stroke-width:2px
+
+  App["<b>App.jsx</b><br/>owns state: { distance, elevation }"]:::root
+  Chips["<b>Calcite UI</b><br/>&lt;calcite-chip&gt; distance<br/>&lt;calcite-chip&gt; elevation"]:::calcite
+  Map["<b>Map component</b><br/>&lt;arcgis-map&gt;"]:::maps
+  Profile["<b>Elevation profile</b><br/>&lt;arcgis-elevation-profile&gt;"]:::maps
+  Handler["<b>React handler</b><br/>handleElevationProfileChange(event)"]:::react
+
+  App -->|declarative render in JSX| Chips
+  App -->|declarative render in JSX| Map
+  App -->|declarative render in JSX| Profile
+  Profile -->|arcgisPropertyChange| Handler
+  Handler -->|updates App state with setDistance / setElevation| App
+```
+
+---
+
+# Summary of benefits from React
 
 - Declarative rendering
 - Easy to pass properties to components
@@ -339,7 +453,7 @@ layout: two-cols
 <body>
   <calcite-chip id="distance"></calcite-chip>
   <calcite-chip id="elevation"></calcite-chip>
-  <arcgis-map item-id="5fe7222cfd4e41cab4321cc1fde66cc2" id="map"> </arcgis-map>
+  <arcgis-map item-id="a2a490fe264c4363b4fa2981d03f43f5" id="map"> </arcgis-map>
   <arcgis-elevation-profile reference-element="map"></arcgis-elevation-profile>
 </body>
 ```
@@ -486,13 +600,23 @@ layout: center
 
 ---
 
+# Encapsulating complexity with components
+
+- Application logic can be encapsulated into smaller components
+- This makes it easier to manage and reason about the code
+- For example, we can create a new component for the elevation profile logic in
+  our app
+
+---
+
 # Other frameworks
 
 - Angular and Vue also support web components.
-- [Getting started with Angular](https://developers.arcgis.com/javascript/latest/get-started-angular/)
-- [Vue Sample Application](https://github.com/Esri/jsapi-resources/tree/main/component-samples/map-components/samples/vue)
-- [jsapi-resources](https://github.com/Esri/jsapi-resources/tree/main/component-samples/map-components/samples/vue)
-  repo has samples for all frameworks
+- [Getting started with Angular](https://developers.arcgis.com/javascript/latest/angular/)
+- [Vue template application](https://github.com/Esri/jsapi-resources/tree/main/templates/js-maps-sdk-vue)
+- [jsapi-resources](https://github.com/Esri/jsapi-resources) repo has samples
+  for many frameworks
+- Get started with `npm init @arcgis` and select your framework of choice
 
 ---
 
@@ -519,7 +643,7 @@ layout: center
 
 Deeper Vite and Vitest guide - shows how Esri is building apps
 
-**When**: Tomorrow (Wednesday, March 12) | 4:00 PM - 5:00 PM PDT
+**When**: Tomorrow (Thursday, March 12) | 4:00 PM - 5:00 PM PDT
 
 **Where**: Mohave Learning Center | Palm Springs Convention Center
 
@@ -535,13 +659,27 @@ Deeper Vite and Vitest guide - shows how Esri is building apps
 layout: center
 ---
 
+# Share your feedback on Map components in the JavaScript Maps SDK
+
+And get Esri swag!
+
+- **30-minute feedback sessions** with our User Research team on Wednesday and
+  Thursday
+- No need to prepare anything. _Schedule your session today!_
+
+<img src="./assets/map-components-feedback.svg" alt="" style="margin: 0 auto">
+
+---
+layout: center
+---
+
 # Questions?
 
 ArcGIS Maps SDK for JavaScript: App Development with Components, Part 2: Using
 Frameworks
 
 Demos and additional resources available at:
-[arcg.is/esri-2025-using-components-2](https://arcg.is/esri-2025-using-components-2)
+[arcg.is/esri-2026-using-components-2](https://arcg.is/esri-2026-using-components-2)
 
 <img src="./assets/qr-code.svg" alt="" style="margin: 0 auto">
 

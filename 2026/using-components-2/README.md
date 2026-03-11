@@ -20,9 +20,10 @@ Presenters: [Omar Kawach](https://github.com/omarkawach) &
 Presented at
 [Esri Dev & Tech Summit 2026](https://registration.esri.com/flow/esri/26epcdev/deveventportal/page/detailed-agenda/session/1761121225206001GaOj).
 
-[![ArcGIS Maps SDK for JavaScript: App Development with Components part 2: Using Frameworks header slide](./assets/header-slide.webp)](https://maxpatiiuk.github.io/esri-dev-summit-presentations/2026/using-components-2)
+[![ArcGIS Maps SDK for JavaScript: App Development with Components part 2: Using Frameworks header slide](./assets/header-slide.avif)](https://maxpatiiuk.github.io/esri-dev-summit-presentations/2026/using-components-2)
 
 [Slides](https://maxpatiiuk.github.io/esri-dev-summit-presentations/2026/using-components-2)
+
 See
 [Part 1](https://registration.esri.com/flow/esri/26epcdev/deveventportal/page/detailed-agenda/session/1761121115055001AX1x),
 [Part 3](https://registration.esri.com/flow/esri/26epcdev/deveventportal/page/detailed-agenda/session/1761121324274001qsE7),
@@ -53,7 +54,7 @@ See also, [deeper dive into Vite](../build-tooling/).
 - [Documentation](https://developers.arcgis.com/javascript)
 - [Get started (for NPM)](https://developers.arcgis.com/javascript/latest/get-started/#npm)
 - [Maps SDK Resources](https://github.com/Esri/jsapi-resources)
-- [React sample app](https://github.com/Esri/jsapi-resources/tree/main/component-samples/map-and-charts-components-react)
+- [React sample app](https://github.com/Esri/jsapi-resources/tree/main/templates/js-maps-sdk-react)
 - [Disconnected environment tutorial](https://developers.arcgis.com/javascript/latest/working-with-assets/)
 
 ### React ⚛️
