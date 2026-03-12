@@ -53,7 +53,6 @@ export function App(): React.JSX.Element {
         ground="world-elevation"
         center={center}
         zoom={9}
-        popupDisabled
       >
         {!isSmallScreen && (
           <div slot="top-left" className="layout-slot">
@@ -62,7 +61,25 @@ export function App(): React.JSX.Element {
         )}
 
         <div slot="top-right" className="layout-slot">
-          <MorelPanel />
+          <calcite-panel
+            heading="Top Right Slot"
+            icon="dock-right"
+            className="content-panel"
+            slot="top-right"
+            collapsible
+          >
+            <calcite-notice open slot="content-top">
+              <div slot="message">
+                We'll populate this slot with content in the next step
+              </div>
+            </calcite-notice>
+            <ul>
+              <li>Fire recency</li>
+              <li>Elevation</li>
+              <li>Trail access</li>
+            </ul>
+          </calcite-panel>
+          {/* <MorelPanel /> */}
         </div>
 
         {/* Hidden elevation-profile component used for elevation sampling on click. */}

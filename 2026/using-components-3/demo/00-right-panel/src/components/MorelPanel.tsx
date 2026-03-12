@@ -45,34 +45,38 @@ export function MorelPanel(): React.JSX.Element {
         ></calcite-meter>    
       </calcite-tile> */}
 
-      {/* <MorelTile 
+      <MorelTile
         icon="pin"
         description="Latitude and longitude of last map click."
         heading="Location"
-        blurb={locationLabel}
+        metric={locationLabel}
         action={{
           label: 'Inspect features at location',
           onClick: inspectFeaturesAtLocation,
           disabled: !canInspectFeaturesAtLocation,
         }}
-      /> */}
-      {/* <MorelTile
+      />
+      <MorelTile
         heading="Recent Wildfire"
         icon="drive-time"
         description={burnDetail}
-        blurb={burnStatusLabel}
+        metric={burnStatusLabel}
         meter={{
           label: 'Burn status',
           min: 0,
           max: 100,
           value: burnStatusValue,
         }}
-      /> */}
-      {/* <MorelTile
+      />
+      <MorelTile
         icon="altitude"
-        description={elevationValue ? elevationDetail : "Click on the map to get elevation details."}
+        description={
+          elevationValue
+            ? elevationDetail
+            : 'Click on the map to get elevation details.'
+        }
         heading="Elevation"
-        blurb={
+        metric={
           elevationValue !== null
             ? `${Math.round(elevationValue)} ft`
             : 'Tap map'
@@ -83,19 +87,19 @@ export function MorelPanel(): React.JSX.Element {
           max: 100,
           value: elevationValue !== null ? elevationScore : null,
         }}
-      /> */}
-      {/* <MorelTile
+      />
+      <MorelTile
         icon="walking"
         description={accessDetail}
         heading="Access"
-        blurb={accessLabel}
+        metric={accessLabel}
         meter={{
           label: 'Access (distance)',
           min: 0,
           max: 100,
           value: accessValue,
         }}
-      /> */}
+      />
     </calcite-tile-group>
   );
 }

@@ -20,7 +20,7 @@ export type MorelTileProps = {
   icon: Exclude<CalciteTileIcon, undefined>;
   description?: string;
   className?: string;
-  blurb?: React.ReactNode;
+  metric?: React.ReactNode;
   meter?: MorelTileMeterProps;
   action?: {
     label: string;
@@ -35,7 +35,7 @@ export function MorelTile({
   icon,
   description,
   className,
-  blurb,
+  metric,
   meter,
   action,
   children,
@@ -47,9 +47,9 @@ export function MorelTile({
       description={description}
       heading={heading}
     >
-      {blurb != null ? (
+      {metric != null ? (
         <div className="metric" slot="content-top">
-          {blurb}
+          {metric}
         </div>
       ) : null}
 
