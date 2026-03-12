@@ -1,6 +1,6 @@
 ---
 titleTemplate: '%s'
-author: Adam Tirella, Nicholas Romano, Kitty Hurley
+author: Adam Tirella, Nicholas Romano
 mdc: true
 colorSchema: light
 ---
@@ -11,7 +11,7 @@ colorSchema: light
 
 ## ArcGIS Maps SDK for JavaScript:<br>App Development with Components,<br>Part 3: User Experience
 
-Adam Tirella, Nicholas Romano, Kitty Hurley
+Adam Tirella, Nicholas Romano
 
 ---
 is: feedback

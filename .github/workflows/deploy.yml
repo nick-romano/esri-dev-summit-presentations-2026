@@ -39,14 +39,6 @@ jobs:
           npx vite build \
             --base=/${{github.event.repository.name}}/2026/using-components-3/demo/01-shell-application/ \
             --outDir=../../../../dist/2026/using-components-3/demo/01-shell-application/
-      - name: Collect build outputs
-        run: |
-          mv -f 2024 dist/2024
-      - name: Setup Pages
-        uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: dist
 
   deploy:
     environment:
