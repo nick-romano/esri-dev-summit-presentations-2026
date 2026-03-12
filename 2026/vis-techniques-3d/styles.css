@@ -1,7 +1,0 @@
-.slidev-layout h1 + p {
-  color: #bee3ff;
-}
-
-.glow-swap-on {
-  transition: opacity 250ms ease-in-out;
-}

@@ -27,31 +27,6 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-
-      - name: Build Slides > 2025 > Build Tooling
-        working-directory: 2025/build-tooling
-        run: |
-          npx slidev build --base /${{github.event.repository.name}}/2025/build-tooling/ --out ../../dist/2025/build-tooling/
-
-      - name: Build Slides > 2025 > Using Components 2
-        working-directory: 2025/using-components-2
-        run: |
-          npx slidev build --base /${{github.event.repository.name}}/2025/using-components-2/ --out ../../dist/2025/using-components-2/
-
-      - name: Build Slides > 2025 > geo-io
-        working-directory: 2025/geo-io
-        run: |
-          npx slidev build --base /${{github.event.repository.name}}/2025/geo-io --out ../../dist/2025/geo-io/
-
-      - name: Build Slides > 2026 > Build Tooling
-        working-directory: 2026/build-tooling
-        run: |
-          npx slidev build --base /${{github.event.repository.name}}/2026/build-tooling/ --out ../../dist/2026/build-tooling/
-
-      - name: Build Slides > 2026 > Using Components 2
-        working-directory: 2026/using-components-2
-        run: |
-          npx slidev build --base /${{github.event.repository.name}}/2026/using-components-2/ --out ../../dist/2026/using-components-2/
       - name: Build Slides > 2026 > Using Components 3
         working-directory: 2026/using-components-3
         run: |
@@ -64,24 +39,11 @@ jobs:
           npx vite build \
             --base=/${{github.event.repository.name}}/2026/using-components-3/demo/01-shell-application/ \
             --outDir=../../../../dist/2026/using-components-3/demo/01-shell-application/
-
-      - name: Build Slides > 2026 > a-look-under-the-hood
-        working-directory: 2026/a-look-under-the-hood
-        run: |
-          npx slidev build --base /${{github.event.repository.name}}/2026/a-look-under-the-hood --out ../../dist/2026/a-look-under-the-hood/
-
-      - name: Build Slides > 2026 > vis-techniques-3d
-        working-directory: 2026/vis-techniques-3d
-        run: |
-          npx slidev build --base /${{github.event.repository.name}}/2026/vis-techniques-3d --out ../../dist/2026/vis-techniques-3d/
-
       - name: Collect build outputs
         run: |
           mv -f 2024 dist/2024
-
       - name: Setup Pages
         uses: actions/configure-pages@v5
-
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
