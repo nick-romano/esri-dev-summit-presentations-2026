@@ -7,6 +7,7 @@ import '@esri/calcite-components/components/calcite-navigation';
 import '@esri/calcite-components/components/calcite-navigation-logo';
 import '@esri/calcite-components/components/calcite-action';
 import '@esri/calcite-components/components/calcite-sheet';
+import '@esri/calcite-components/components/calcite-panel';
 import '@esri/calcite-components/components/calcite-shell-panel';
 
 import { useLayersActions } from './context/LayersContext';
@@ -22,8 +23,10 @@ export function App(): React.JSX.Element {
   const { handleViewReady } = useLayersActions();
   const { handleMapClick, registerElevationProfileElement } =
     useResultsActions();
-  const { isSmallScreen, isPopupOpen } = useUIState();
-  const { handleFeaturesSheetClose } = useUIActions();
+  const { isSmallScreen, isPopupOpen, elevationProfileComponentOpen } =
+    useUIState();
+  const { handleFeaturesSheetClose, closeElevationProfileComponent } =
+    useUIActions();
   return (
     // The Shell component is used as a layout for this template
     <calcite-shell>
@@ -53,24 +56,39 @@ export function App(): React.JSX.Element {
         <div slot="top-right">
           <MorelPanel />
         </div>
-
-        {/* Hidden elevation-profile component used for elevation sampling on click. */}
-        <arcgis-elevation-profile
-          className="elevation-profile-hidden"
-          referenceElement="morel-map"
-          distanceUnit="imperial"
-          elevationUnit="imperial"
-          slot="bottom-right"
-          hideChart
-          hideLegend
-          hideSettingsButton
-          hideSelectButton
-          hideStartButton
-          hideClearButton
-          hideVisualization
-          ref={registerElevationProfileElement}
-        ></arcgis-elevation-profile>
       </arcgis-map>
+
+      <calcite-shell-panel
+        slot="panel-bottom"
+        label="Elevation profile"
+        displayMode="float-all"
+        collapsed={!elevationProfileComponentOpen}
+        resizable
+      >
+        <calcite-panel
+          heading="Elevation Profile"
+          description="Inspect the terrain profile for the selected walking route."
+        >
+          <calcite-action
+            slot="header-actions-end"
+            icon="x"
+            text="Close elevation profile"
+            onClick={closeElevationProfileComponent}
+          ></calcite-action>
+          <arcgis-elevation-profile
+            className="elevation-profile-panel"
+            referenceElement="morel-map"
+            distanceUnit="imperial"
+            elevationUnit="imperial"
+            hideLegend
+            hideSettingsButton
+            hideSelectButton
+            hideStartButton
+            hideClearButton
+            ref={registerElevationProfileElement}
+          ></arcgis-elevation-profile>
+        </calcite-panel>
+      </calcite-shell-panel>
 
       {isSmallScreen && (
         <calcite-shell-panel label="Map filters" slot="panel-top">

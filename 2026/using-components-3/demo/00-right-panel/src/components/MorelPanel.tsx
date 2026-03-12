@@ -1,6 +1,7 @@
 import '@esri/calcite-components/components/calcite-tile-group';
 
 import { useResultsActions, useResultsState } from '../context/ResultsContext';
+import { useUIActions } from '../context/UIContext';
 import { MorelTile } from './MorelTile';
 import type { MorelTileProps } from './MorelTile';
 
@@ -19,6 +20,7 @@ export function MorelPanel(): React.JSX.Element {
     canInspectFeaturesAtLocation,
   } = useResultsState();
   const { inspectFeaturesAtLocation } = useResultsActions();
+  const { openElevationProfileComponent } = useUIActions();
 
   return (
     <calcite-tile-group
@@ -45,18 +47,18 @@ export function MorelPanel(): React.JSX.Element {
         ></calcite-meter>    
       </calcite-tile> */}
 
-      <MorelTile
+      {/* <MorelTile
         icon="pin"
         description="Latitude and longitude of last map click."
         heading="Location"
         metric={locationLabel}
-        action={{
-          label: 'Inspect features at location',
-          onClick: inspectFeaturesAtLocation,
-          disabled: !canInspectFeaturesAtLocation,
-        }}
-      />
-      <MorelTile
+        // action={{
+        //   label: 'Inspect features at location',
+        //   onClick: inspectFeaturesAtLocation,
+        //   disabled: !canInspectFeaturesAtLocation,
+        // }}
+      /> */}
+      {/* <MorelTile
         heading="Recent Wildfire"
         icon="drive-time"
         description={burnDetail}
@@ -67,8 +69,8 @@ export function MorelPanel(): React.JSX.Element {
           max: 100,
           value: burnStatusValue,
         }}
-      />
-      <MorelTile
+      /> */}
+      {/* <MorelTile
         icon="altitude"
         description={
           elevationValue
@@ -87,8 +89,12 @@ export function MorelPanel(): React.JSX.Element {
           max: 100,
           value: elevationValue !== null ? elevationScore : null,
         }}
-      />
-      <MorelTile
+        // action={{
+        //   label: 'Open elevation profile',
+        //   onClick: openElevationProfileComponent,
+        // }}
+      /> */}
+      {/* <MorelTile
         icon="walking"
         description={accessDetail}
         heading="Access"
@@ -99,7 +105,7 @@ export function MorelPanel(): React.JSX.Element {
           max: 100,
           value: accessValue,
         }}
-      />
+      /> */}
     </calcite-tile-group>
   );
 }

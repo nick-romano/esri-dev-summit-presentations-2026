@@ -17,11 +17,19 @@ import {
   handleZoomToNorthwest,
 } from '../utils/mapUtilsUi';
 import { LayerGraphic } from './LayerGraphic';
-import { useLayersActions, useLayersState } from '../context/LayersContext';
+import {
+  type RecreationType,
+  useLayersActions,
+  useLayersState,
+} from '../context/LayersContext';
 import { useUIState } from '../context/UIContext';
 import { DisclaimerNotice } from '../components/DisclaimerNotice';
 
-const RECREATIONITEMS = [
+const RECREATIONITEMS: {
+  key: RecreationType;
+  label: string;
+  value: RecreationType;
+}[] = [
   {
     key: 'trailhead',
     label: 'Trailheads',

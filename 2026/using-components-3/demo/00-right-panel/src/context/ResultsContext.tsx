@@ -9,7 +9,6 @@ import {
 } from 'react';
 
 import Graphic from '@arcgis/core/Graphic.js';
-import Polyline from '@arcgis/core/geometry/Polyline.js';
 import type MapView from '@arcgis/core/views/MapView.js';
 import type SceneView from '@arcgis/core/views/SceneView.js';
 import type ElevationProfileAnalysisView2D from '@arcgis/core/views/2d/analysis/ElevationProfileAnalysisView2D.js';
@@ -20,6 +19,81 @@ import {
 } from '../utils/mapUtils';
 import { useLayersState } from './LayersContext';
 import { useUIActions } from './UIContext';
+
+const feetPerMeter = 3.28084;
+
+function formatImperialDistance(meters: number): string {
+  const safeMeters = Number.isFinite(meters) ? Math.max(meters, 0) : 0;
+  const feet = safeMeters * feetPerMeter;
+
+  if (feet < 1000) {
+    return `${Math.round(feet)} ft`;
+  }
+
+  const miles = feet / 5280;
+  const decimals = miles < 10 ? 2 : 1;
+  return `${miles.toFixed(decimals)} mi`;
+}
+
+function formatNameOrUnknown(
+  label: string,
+  value: string | null | undefined,
+): string {
+  return value ? `${label}: ${value}` : `${label}: Unknown`;
+}
+
+function formatProfileDistance(distance: number, unit: string): string {
+  switch (unit) {
+    case 'feet':
+    case 'foot':
+    case 'ft':
+      return `${Math.round(distance)} ft`;
+    case 'miles':
+    case 'mile':
+    case 'mi': {
+      const decimals = distance < 10 ? 2 : 1;
+      return `${distance.toFixed(decimals)} mi`;
+    }
+    case 'meters':
+    case 'meter':
+    case 'm':
+      return `${Math.round(distance)} m`;
+    case 'kilometers':
+    case 'kilometer':
+    case 'km': {
+      const decimals = distance < 10 ? 2 : 1;
+      return `${distance.toFixed(decimals)} km`;
+    }
+    default:
+      return `${distance.toFixed(distance < 10 ? 2 : 1)} ${unit}`;
+  }
+}
+
+function convertDistanceToMeters(
+  distance: number,
+  unit: string,
+): number | null {
+  switch (unit) {
+    case 'feet':
+    case 'foot':
+    case 'ft':
+      return distance / feetPerMeter;
+    case 'miles':
+    case 'mile':
+    case 'mi':
+      return (distance * 5280) / feetPerMeter;
+    case 'meters':
+    case 'meter':
+    case 'm':
+      return distance;
+    case 'kilometers':
+    case 'kilometer':
+    case 'km':
+      return distance * 1000;
+    default:
+      return null;
+  }
+}
 
 type ResultsState = {
   burnStatusValue: number;
@@ -209,7 +283,6 @@ export function ResultsProvider(props: PropsWithChildren): React.JSX.Element {
       requestId: number,
     ): Promise<void> => {
       if (el.progress === 1) {
-        // Allow a microtask for results to settle.
         await Promise.resolve();
         return;
       }
@@ -255,6 +328,54 @@ export function ResultsProvider(props: PropsWithChildren): React.JSX.Element {
     [],
   );
 
+  const getElevationProfileDistance = useCallback(
+    async (
+      el: HTMLArcgisElevationProfileElement,
+      view: MapView | SceneView,
+      requestId: number,
+    ): Promise<{
+      displayDistance: number;
+      displayUnit: string;
+      meters: number;
+    } | null> => {
+      await waitForElevationProfileDone(el, requestId);
+
+      if (requestIdRef.current !== requestId) {
+        return null;
+      }
+
+      type WhenAnalysisView = (
+        analysis: unknown,
+      ) => Promise<ElevationProfileAnalysisView2D>;
+
+      const analysisView = await (
+        view as unknown as { whenAnalysisView: WhenAnalysisView }
+      ).whenAnalysisView(el.analysis);
+
+      const result = analysisView.results[0];
+      const displayDistance =
+        result.statistics?.maxDistance ??
+        result.samples?.[result.samples.length - 1]?.distance;
+      const displayUnit = analysisView.effectiveDisplayUnits.distance;
+
+      if (
+        typeof displayDistance !== 'number' ||
+        !Number.isFinite(displayDistance) ||
+        typeof displayUnit !== 'string'
+      ) {
+        return null;
+      }
+
+      const meters = convertDistanceToMeters(displayDistance, displayUnit);
+      if (meters === null || !Number.isFinite(meters)) {
+        return null;
+      }
+
+      return { displayDistance, displayUnit, meters };
+    },
+    [waitForElevationProfileDone],
+  );
+
   const inspectFeaturesAtLocation = useCallback(async (): Promise<void> => {
     const clickDetail = clickDetailRef.current;
     if (!clickDetail) {
@@ -275,6 +396,7 @@ export function ResultsProvider(props: PropsWithChildren): React.JSX.Element {
   const handleMapClick = useCallback(
     async (event: HTMLArcgisMapElement['arcgisViewClick']): Promise<void> => {
       const { mapPoint } = event.detail;
+      const currentView = event.target.view as MapView | SceneView | undefined;
 
       // Default to not inspectable until a hitTest proves otherwise.
       clickDetailRef.current = null;
@@ -289,6 +411,9 @@ export function ResultsProvider(props: PropsWithChildren): React.JSX.Element {
       // Clear any prior route immediately (avoid stale highlights).
       if (selectedTrailRouteLayer) {
         selectedTrailRouteLayer.removeAll();
+      }
+      if (elevationProfileElementRef.current) {
+        elevationProfileElementRef.current.feature = undefined;
       }
 
       if (
@@ -348,64 +473,33 @@ export function ResultsProvider(props: PropsWithChildren): React.JSX.Element {
         detail: burnStatus.detail,
       });
 
-      // Elevation via <arcgis-elevation-profile /> sampled at the clicked point.
+      // Query exact elevation at the clicked point from ground data.
       try {
-        const elevationProfileElement = elevationProfileElementRef.current;
-        if (!elevationProfileElement) {
-          throw new Error('Elevation profile element not registered');
+        if (!currentView) {
+          throw new Error('No view available for elevation query');
         }
 
-        const view =
-          elevationProfileElement.view ??
-          (event.target.view as MapView | SceneView | undefined);
+        await currentView.when();
 
-        if (!view) {
-          throw new Error('No view available for elevation profile');
+        const map = currentView.map;
+        if (!map) {
+          throw new Error('No map available for elevation query');
         }
 
-        // Ensure the polyline is valid (must have at least two points).
-        const offsetMeters = 20;
-        const sr = mapPoint.spatialReference;
-        const offsetX = sr.isGeographic ? 0.0002 : offsetMeters;
-
-        elevationProfileElement.feature = new Graphic({
-          geometry: new Polyline({
-            spatialReference: sr,
-            paths: [
-              [
-                [mapPoint.x, mapPoint.y],
-                [mapPoint.x + offsetX, mapPoint.y],
-              ],
-            ],
-          }),
+        const elevationResult = await map.ground.queryElevation(mapPoint, {
+          demResolution: 'finest-contiguous',
         });
-
-        // Wait for the component to finish computing.
-        await waitForElevationProfileDone(elevationProfileElement, requestId);
 
         if (requestIdRef.current !== requestId) {
           return;
         }
 
-        await view.when();
-
-        type WhenAnalysisView = (
-          analysis: unknown,
-        ) => Promise<ElevationProfileAnalysisView2D>;
-
-        const analysisView = await (
-          view as unknown as { whenAnalysisView: WhenAnalysisView }
-        ).whenAnalysisView(elevationProfileElement.analysis);
-
-        const firstResult = analysisView.results[0];
-        const samples = firstResult.samples;
-
         let elevationFeet: number | null = null;
-        if (Array.isArray(samples) && samples.length > 0) {
-          const elevation = samples[0].elevation;
-          if (typeof elevation === 'number' && Number.isFinite(elevation)) {
-            elevationFeet = elevation;
-          }
+        if (
+          typeof elevationResult.geometry.z === 'number' &&
+          Number.isFinite(elevationResult.geometry.z)
+        ) {
+          elevationFeet = elevationResult.geometry.z * feetPerMeter;
         }
 
         dispatch({ type: 'setElevationValue', value: elevationFeet });
@@ -426,30 +520,80 @@ export function ResultsProvider(props: PropsWithChildren): React.JSX.Element {
         return;
       }
 
+      const routeGraphic = accessStatus.routeGeometry
+        ? new Graphic({
+            geometry: accessStatus.routeGeometry,
+            symbol: {
+              type: 'simple-line',
+              width: 4,
+            },
+          })
+        : undefined;
+
       if (selectedTrailRouteLayer) {
         selectedTrailRouteLayer.removeAll();
-        if (accessStatus.routeGeometry) {
-          selectedTrailRouteLayer.add(
-            new Graphic({
-              geometry: accessStatus.routeGeometry,
-              symbol: {
-                type: 'simple-line',
-                width: 4,
-              },
-            }),
-          );
+        if (routeGraphic) {
+          selectedTrailRouteLayer.add(routeGraphic);
+        }
+      }
+
+      let alongTrailMeters = accessStatus.alongTrailMeters;
+      let alongTrailLabel =
+        accessStatus.alongTrailMeters !== null
+          ? formatImperialDistance(accessStatus.alongTrailMeters)
+          : null;
+
+      if (elevationProfileElementRef.current) {
+        elevationProfileElementRef.current.feature = routeGraphic;
+
+        if (routeGraphic && currentView) {
+          try {
+            const profileDistance = await getElevationProfileDistance(
+              elevationProfileElementRef.current,
+              currentView,
+              requestId,
+            );
+
+            if (requestIdRef.current !== requestId) {
+              return;
+            }
+
+            if (profileDistance) {
+              alongTrailMeters = profileDistance.meters;
+              alongTrailLabel = formatProfileDistance(
+                profileDistance.displayDistance,
+                profileDistance.displayUnit,
+              );
+            }
+          } catch {
+            if (requestIdRef.current !== requestId) {
+              return;
+            }
+          }
         }
       }
 
       const alongTrailMiles =
-        accessStatus.alongTrailMeters !== null
-          ? (accessStatus.alongTrailMeters * 3.28084) / 5280
+        alongTrailMeters !== null
+          ? (alongTrailMeters * feetPerMeter) / 5280
           : null;
+
+      const accessLabel =
+        accessStatus.offTrailMeters !== null && alongTrailMeters !== null
+          ? formatImperialDistance(
+              accessStatus.offTrailMeters + alongTrailMeters,
+            )
+          : accessStatus.label;
+
+      const accessDetail =
+        accessStatus.offTrailMeters !== null && alongTrailLabel !== null
+          ? `${formatNameOrUnknown('Trail', accessStatus.trailName)} • ${formatNameOrUnknown('Trailhead', accessStatus.trailheadName)} • Off trail: ${formatImperialDistance(accessStatus.offTrailMeters)} • Along trail: ${alongTrailLabel}`
+          : accessStatus.detail;
 
       dispatch({
         type: 'setAccessStatus',
-        label: accessStatus.label,
-        detail: accessStatus.detail,
+        label: accessLabel,
+        detail: accessDetail,
         value: getAccessValueFromMiles(alongTrailMiles),
       });
     },

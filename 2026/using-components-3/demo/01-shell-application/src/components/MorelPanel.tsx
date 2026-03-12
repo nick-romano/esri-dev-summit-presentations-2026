@@ -1,6 +1,7 @@
 import '@esri/calcite-components/components/calcite-tile-group';
 
 import { useResultsActions, useResultsState } from '../context/ResultsContext';
+import { useUIActions } from '../context/UIContext';
 import { MorelTile } from './MorelTile';
 import type { MorelTileProps } from './MorelTile';
 
@@ -23,6 +24,7 @@ export function MorelPanel(): React.JSX.Element {
     canInspectFeaturesAtLocation,
   } = useResultsState();
   const { inspectFeaturesAtLocation } = useResultsActions();
+  const { openElevationProfileComponent } = useUIActions();
 
   return (
     <calcite-tile-group
@@ -72,6 +74,10 @@ export function MorelPanel(): React.JSX.Element {
           min: 0,
           max: 100,
           value: elevationValue !== null ? elevationScore : null,
+        }}
+        action={{
+          label: 'Open elevation profile',
+          onClick: openElevationProfileComponent,
         }}
       />
       <MorelTile

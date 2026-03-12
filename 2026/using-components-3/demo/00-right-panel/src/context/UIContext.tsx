@@ -14,11 +14,14 @@ type UIState = {
   isSmallScreen: boolean;
   isFiltersSheetOpen: boolean;
   isPopupOpen: boolean;
+  elevationProfileComponentOpen: boolean;
 };
 
 type UIActions = {
   closePopup: () => void;
   openPopup: () => void;
+  closeElevationProfileComponent: () => void;
+  openElevationProfileComponent: () => void;
   handleFeaturesSheetClose: (event: CustomEvent) => void;
 };
 
@@ -29,9 +32,19 @@ export function UIProvider(props: PropsWithChildren): React.JSX.Element {
   const isSmallScreen = useIsBelowScreenSize(700);
   const [isFiltersSheetOpen, setIsFiltersSheetOpen] = useState(false);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [elevationProfileComponentOpen, setElevationProfileComponentOpen] =
+    useState(false);
 
   const openPopup = useCallback(() => setIsPopupOpen(true), []);
   const closePopup = useCallback(() => setIsPopupOpen(false), []);
+  const openElevationProfileComponent = useCallback(
+    () => setElevationProfileComponentOpen(true),
+    [],
+  );
+  const closeElevationProfileComponent = useCallback(
+    () => setElevationProfileComponentOpen(false),
+    [],
+  );
 
   useEffect(() => {
     if (!isSmallScreen) {
@@ -40,8 +53,18 @@ export function UIProvider(props: PropsWithChildren): React.JSX.Element {
   }, [isSmallScreen]);
 
   const state: UIState = useMemo(
-    () => ({ isSmallScreen, isFiltersSheetOpen, isPopupOpen }),
-    [isSmallScreen, isFiltersSheetOpen, isPopupOpen],
+    () => ({
+      isSmallScreen,
+      isFiltersSheetOpen,
+      isPopupOpen,
+      elevationProfileComponentOpen,
+    }),
+    [
+      isSmallScreen,
+      isFiltersSheetOpen,
+      isPopupOpen,
+      elevationProfileComponentOpen,
+    ],
   );
 
   const handleFeaturesSheetClose = useCallback(
@@ -57,9 +80,17 @@ export function UIProvider(props: PropsWithChildren): React.JSX.Element {
     () => ({
       openPopup,
       closePopup,
+      openElevationProfileComponent,
+      closeElevationProfileComponent,
       handleFeaturesSheetClose,
     }),
-    [openPopup, closePopup, handleFeaturesSheetClose],
+    [
+      openPopup,
+      closePopup,
+      openElevationProfileComponent,
+      closeElevationProfileComponent,
+      handleFeaturesSheetClose,
+    ],
   );
 
   return (
